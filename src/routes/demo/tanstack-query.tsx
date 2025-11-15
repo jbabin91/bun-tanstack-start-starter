@@ -11,10 +11,15 @@ type Todo = {
   name: string;
 };
 
+async function fetchTodos() {
+  const res = await fetch('/demo/api/tq-todos');
+  return await (res.json() as Promise<Todo[]>);
+}
+
 function TanStackQueryDemo() {
   const { data, refetch } = useQuery<Todo[]>({
     queryKey: ['todos'],
-    queryFn: () => fetch('/demo/api/tq-todos').then((res) => res.json()),
+    queryFn: fetchTodos,
     initialData: [],
   });
 
