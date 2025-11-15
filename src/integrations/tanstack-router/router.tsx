@@ -1,6 +1,8 @@
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
+import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
+import { NotFound } from '@/components/errors/not-found';
 import * as TanstackQuery from '@/integrations/tanstack-query/root-provider';
 // Import the generated route tree
 import { routeTree } from '@/routeTree.gen';
@@ -13,7 +15,8 @@ export const getRouter = () => {
     routeTree,
     context: { ...rqContext },
     defaultPreload: 'intent',
-    defaultNotFoundComponent: () => <div>404 - Page Not Found</div>,
+    defaultErrorComponent: DefaultCatchBoundary,
+    defaultNotFoundComponent: NotFound,
   });
 
   setupRouterSsrQueryIntegration({
