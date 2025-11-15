@@ -1,0 +1,15 @@
+# Ignore lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Ignore build output
+.output/
+.tanstack/
+dist/
+
+# Ignore dependency directories
+node_modules/
+
+# Generated files
+*.gen.ts
