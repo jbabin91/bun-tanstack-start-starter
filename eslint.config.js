@@ -128,6 +128,15 @@ export default defineConfig(
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       '@eslint-react/no-context-provider': 'off',
       '@eslint-react/no-nested-component-definitions': 'off',
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        {
+          controlComponents: [],
+          depth: 3,
+          labelAttributes: [],
+          labelComponents: ['Label'],
+        },
+      ],
       'react-hooks/exhaustive-deps': 'off',
       'react/jsx-no-bind': 'off',
       'react/jsx-no-constructed-context-values': 'off',
