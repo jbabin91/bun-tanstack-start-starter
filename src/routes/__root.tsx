@@ -5,10 +5,10 @@ import {
   HeadContent,
   Scripts,
 } from '@tanstack/react-router';
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import Header from '@/components/layouts/header';
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools';
+import TanStackRouterDevtools from '@/integrations/tanstack-router/devtools';
 import appCss from '@/styles/globals.css?url';
 
 type MyRouterContext = {
@@ -53,13 +53,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           config={{
             position: 'bottom-right',
           }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
+          plugins={[TanStackRouterDevtools, TanStackQueryDevtools]}
         />
         <Scripts />
       </body>
