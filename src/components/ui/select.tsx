@@ -1,10 +1,6 @@
 import { Select as SelectPrimitive } from '@base-ui-components/react/select';
-import {
-  ChevronDownIcon,
-  ChevronsUpDownIcon,
-  ChevronUpIcon,
-} from 'lucide-react';
 
+import { Icon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 const Select = SelectPrimitive.Root;
@@ -31,7 +27,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon data-slot="select-icon">
-        <ChevronsUpDownIcon className="-me-1 size-4 opacity-72" />
+        <Icon.ChevronsUpDown className="-me-1 size-4 opacity-72" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -74,7 +70,7 @@ function SelectPopup({
             className="before:from-popover top-0 z-50 flex h-6 w-full cursor-default items-center justify-center before:pointer-events-none before:absolute before:inset-x-px before:top-px before:h-[200%] before:rounded-t-[calc(var(--radius-lg)-1px)] before:bg-linear-to-b before:from-50%"
             data-slot="select-scroll-up-arrow"
           >
-            <ChevronUpIcon className="relative size-4" />
+            <Icon.ChevronUp className="relative size-4" />
           </SelectPrimitive.ScrollUpArrow>
           <span className="bg-popover relative block h-full rounded-lg border bg-clip-padding before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-lg dark:not-in-data-[slot=group]:bg-clip-border">
             <SelectPrimitive.List
@@ -91,7 +87,7 @@ function SelectPopup({
             className="before:from-popover bottom-0 z-50 flex h-6 w-full cursor-default items-center justify-center before:pointer-events-none before:absolute before:inset-x-px before:bottom-px before:h-[200%] before:rounded-b-[calc(var(--radius-lg)-1px)] before:bg-linear-to-t before:from-50%"
             data-slot="select-scroll-down-arrow"
           >
-            <ChevronDownIcon className="relative size-4" />
+            <Icon.ChevronDown className="relative size-4" />
           </SelectPrimitive.ScrollDownArrow>
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>

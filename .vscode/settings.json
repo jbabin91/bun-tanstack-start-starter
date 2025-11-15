@@ -1,11 +1,27 @@
 {
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "files.readonlyInclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
+  },
   "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
   },
   "search.exclude": {
-    "**/routeTree.gen.ts": true
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true,
+    "pnpm-lock.yaml": true
   },
-  "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
-  }
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "^lucide-react/dist/lucide-react.suffixed$"
+  ],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

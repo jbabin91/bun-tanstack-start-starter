@@ -1,15 +1,7 @@
 import { Link } from '@tanstack/react-router';
-import {
-  ChevronDown,
-  ChevronRight,
-  Home,
-  Menu,
-  Network,
-  SquareFunction,
-  StickyNote,
-  X,
-} from 'lucide-react';
 import { useState } from 'react';
+
+import { Icon } from '@/components/icons';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +17,7 @@ export default function Header() {
           className="rounded-lg p-2 transition-colors hover:bg-gray-700"
           onClick={() => setIsOpen(true)}
         >
-          <Menu size={24} />
+          <Icon.Menu size="xl" />
         </button>
         <h1 className="ml-4 text-xl font-semibold">
           <Link to="/">
@@ -50,7 +42,7 @@ export default function Header() {
             className="rounded-lg p-2 transition-colors hover:bg-gray-800"
             onClick={() => setIsOpen(false)}
           >
-            <X size={24} />
+            <Icon.X size="xl" />
           </button>
         </div>
 
@@ -64,7 +56,7 @@ export default function Header() {
             to="/"
             onClick={() => setIsOpen(false)}
           >
-            <Home size={20} />
+            <Icon.Home size="lg" />
             <span className="font-medium">Home</span>
           </Link>
 
@@ -79,7 +71,7 @@ export default function Header() {
             to="/demo/start/server-funcs"
             onClick={() => setIsOpen(false)}
           >
-            <SquareFunction size={20} />
+            <Icon.SquareFunction size="lg" />
             <span className="font-medium">Start - Server Functions</span>
           </Link>
 
@@ -92,7 +84,7 @@ export default function Header() {
             to="/demo/start/api-request"
             onClick={() => setIsOpen(false)}
           >
-            <Network size={20} />
+            <Icon.Network size="lg" />
             <span className="font-medium">Start - API Request</span>
           </Link>
 
@@ -106,7 +98,7 @@ export default function Header() {
               to="/demo/start/ssr"
               onClick={() => setIsOpen(false)}
             >
-              <StickyNote size={20} />
+              <Icon.StickyNote size="lg" />
               <span className="font-medium">Start - SSR Demos</span>
             </Link>
             <button
@@ -119,9 +111,9 @@ export default function Header() {
               }
             >
               {groupedExpanded.StartSSRDemo ? (
-                <ChevronDown size={20} />
+                <Icon.ChevronDown size="lg" />
               ) : (
-                <ChevronRight size={20} />
+                <Icon.ChevronRight size="lg" />
               )}
             </button>
           </div>
@@ -136,7 +128,7 @@ export default function Header() {
                 to="/demo/start/ssr/spa-mode"
                 onClick={() => setIsOpen(false)}
               >
-                <StickyNote size={20} />
+                <Icon.StickyNote size="lg" />
                 <span className="font-medium">SPA Mode</span>
               </Link>
 
@@ -149,7 +141,7 @@ export default function Header() {
                 to="/demo/start/ssr/full-ssr"
                 onClick={() => setIsOpen(false)}
               >
-                <StickyNote size={20} />
+                <Icon.StickyNote size="lg" />
                 <span className="font-medium">Full SSR</span>
               </Link>
 
@@ -162,7 +154,7 @@ export default function Header() {
                 to="/demo/start/ssr/data-only"
                 onClick={() => setIsOpen(false)}
               >
-                <StickyNote size={20} />
+                <Icon.StickyNote size="lg" />
                 <span className="font-medium">Data Only</span>
               </Link>
             </div>
@@ -177,7 +169,7 @@ export default function Header() {
             to="/demo/tanstack-query"
             onClick={() => setIsOpen(false)}
           >
-            <Network size={20} />
+            <Icon.Network size="lg" />
             <span className="font-medium">TanStack Query</span>
           </Link>
 

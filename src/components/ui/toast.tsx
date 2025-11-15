@@ -1,25 +1,19 @@
 'use client';
 
 import { Toast } from '@base-ui-components/react/toast';
-import {
-  CircleAlertIcon,
-  CircleCheckIcon,
-  InfoIcon,
-  LoaderCircleIcon,
-  TriangleAlertIcon,
-} from 'lucide-react';
 
+import { Icon } from '@/components/icons';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const toastManager = Toast.createToastManager();
 
 const TOAST_ICONS = {
-  error: CircleAlertIcon,
-  info: InfoIcon,
-  loading: LoaderCircleIcon,
-  success: CircleCheckIcon,
-  warning: TriangleAlertIcon,
+  error: Icon.CircleAlert,
+  info: Icon.Info,
+  loading: Icon.LoaderCircle,
+  success: Icon.CircleCheck,
+  warning: Icon.TriangleAlert,
 } as const;
 
 type ToastPosition =
