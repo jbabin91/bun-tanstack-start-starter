@@ -20,6 +20,18 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
 
+## TanStack Documentation
+
+Always open `@/docs/tanstack/router/AGENTS.md` when working on:
+
+- Routing features (dynamic routes, loaders, navigation, search params)
+- Route structure, configuration, and patterns
+- Data loading lifecycle, caching, and preloading
+- Authentication/authorization in routes
+- SSR behavior or server-side routing concerns
+
+See the nested `AGENTS.md` files in `docs/tanstack/` for each integration's specific patterns and guidance.
+
 ## Workflow
 
 - Dev server: `bun --bun vite dev --port 3000`.

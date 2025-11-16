@@ -5,5 +5,6 @@ This folder collects higher-level reference material that complements the in-rep
 - [`getting-started.md`](./getting-started.md) covers environment setup, scripts, and editor tips.
 - [`architecture.md`](./architecture.md) explains routing, data fetching, styling, and runtime patterns.
 - [`components.md`](./components.md) describes the UI primitives, composition rules, and accessibility expectations.
+- TanStack-specific references live under `docs/tanstack/` (router + start).
 
 Each document should capture rationale alongside steps so readers understand why patterns exist, not just how to repeat them.
