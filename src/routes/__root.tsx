@@ -6,7 +6,8 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 
-import Header from '@/components/layouts/header';
+import { SiteFooter } from '@/components/layouts/site-footer';
+import { SiteHeader } from '@/components/layouts/site-header';
 import TanStackQueryDevtools from '@/integrations/tanstack-query/devtools';
 import TanStackRouterDevtools from '@/integrations/tanstack-router/devtools';
 import appCss from '@/styles/globals.css?url';
@@ -47,8 +48,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Header />
-        {children}
+        <SiteHeader />
+        <main>{children}</main>
+        <SiteFooter />
         <TanStackDevtools
           config={{
             position: 'bottom-right',

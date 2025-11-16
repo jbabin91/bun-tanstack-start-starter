@@ -36,8 +36,6 @@ export default {
       style: 'fenced',
     },
   },
-  // Files to process
-  globs: ['**/*.{md,mdc,mdx}'],
   // Use .gitignore patterns automatically
   gitignore: true,
 };
