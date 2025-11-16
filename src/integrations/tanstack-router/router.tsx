@@ -4,6 +4,7 @@ import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query
 import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary';
 import { NotFound } from '@/components/errors/not-found';
 import * as TanstackQuery from '@/integrations/tanstack-query/root-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 // Import the generated route tree
 import { routeTree } from '@/routeTree.gen';
 
@@ -17,6 +18,7 @@ export const getRouter = () => {
     defaultPreload: 'intent',
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: NotFound,
+    Wrap: ({ children }) => <ThemeProvider>{children}</ThemeProvider>,
   });
 
   setupRouterSsrQueryIntegration({
