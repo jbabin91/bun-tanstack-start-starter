@@ -2,6 +2,9 @@
 
 This project uses **file-based routing**—the recommended approach for TanStack Router and TanStack Start.
 
+> [!TIP]
+> Using TanStack Start? For SSR lifecycle, request phases, and where code runs during initial render vs client navigation, see `../start/execution-model.md`.
+
 ## Route tree construction
 
 - Routes are defined as files in `src/routes/` following naming conventions

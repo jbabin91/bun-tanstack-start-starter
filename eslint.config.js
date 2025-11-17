@@ -214,6 +214,7 @@ export default defineConfig(
       'src/lib/db/seed/**/*',
       'src/lib/db/reset.ts',
       'src/lib/logger.ts',
+      'scripts/**/*.ts',
       '**/*.test.*',
       '**/*.spec.*',
       'e2e/**/*',

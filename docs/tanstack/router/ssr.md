@@ -2,6 +2,11 @@
 
 > [!NOTE]
 > **TanStack Start handles SSR automatically.** You don't need to manually configure SSR—Start's `@tanstack/react-start` plugin and Nitro server framework handle rendering, hydration, and streaming for you.
+> [!TIP]
+> Using TanStack Start? See Start-specific SSR topics:
+>
+> - Selective SSR controls: `../start/selective-ssr.md`
+> - Hydration troubleshooting: `../start/hydration-errors.md`
 
 This doc explains SSR concepts for reference. If you're using TanStack Start, the routing layer works seamlessly with the framework's built-in SSR capabilities.
 

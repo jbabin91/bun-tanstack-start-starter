@@ -2,6 +2,13 @@
 
 TanStack Start is **isomorphic by default**: code runs on both server and client unless you constrain it. Understanding where code executes helps avoid leaking secrets and prevents hydration mismatches.
 
+> [!TIP]
+> Need routing primitives, matching, or loader lifecycle details? See Router docs:
+>
+> - Routing guide: `../router/routing.md`
+> - Core concepts: `../router/routing-concepts.md`
+> - Data loading lifecycle: `../router/data-loading.md`
+
 ## Loaders are isomorphic
 
 Route loaders run during SSR **and** on the client during navigation. Never assume they are server-only:

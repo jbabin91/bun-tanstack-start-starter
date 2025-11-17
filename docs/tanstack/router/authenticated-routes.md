@@ -2,6 +2,9 @@
 
 Authentication is a common requirement for protecting routes. TanStack Router provides several patterns for building protected routes and redirecting unauthenticated users.
 
+> [!NOTE]
+> Using TanStack Start? For end-to-end auth (sessions, server functions, redirects), see `../start/authentication.md`. This page focuses on routing patterns (`beforeLoad`, layout guards) that also apply within Start.
+
 ## Using `route.beforeLoad`
 
 The `route.beforeLoad` function runs before a route loads. It's the ideal place to check authentication and redirect to login if needed.

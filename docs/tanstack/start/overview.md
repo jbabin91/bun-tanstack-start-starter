@@ -8,3 +8,10 @@ TanStack Start is a full-stack framework that layers server rendering, routing, 
 - **Bundler integration** (Vite) with automatic code splitting and hydration helpers.
 
 Use TanStack Start when you need the convenience of a full-stack framework without giving up TanStack Router’s ergonomics or type safety.
+
+> [!TIP]
+> New to routing or loader lifecycle? See Router docs:
+>
+> - Routing overview and concepts: `../router/overview.md`, `../router/routing-concepts.md`
+> - File-based routing and route trees: `../router/file-based-routing.md`, `../router/route-trees.md`
+> - Loader lifecycle and caching: `../router/data-loading.md`

@@ -2,6 +2,9 @@
 
 This guide shows how to implement DIY authentication in TanStack Start using server functions, secure sessions, and route protection. For vendor options (Clerk, WorkOS, Better Auth), see `authentication-overview.md`.
 
+> [!TIP]
+> For routing-specific guard patterns (layout guards, `beforeLoad`, redirects) see the Router guide `../router/authenticated-routes.md`. Combine those patterns with the session/server-function techniques in this guide for full-stack auth.
+
 ## Core building blocks
 
 1. **Server functions** for login, logout, fetch current user.
