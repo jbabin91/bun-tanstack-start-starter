@@ -58,3 +58,21 @@ See the nested `AGENTS.md` files in `docs/tanstack/` for each integration's spec
 - Async handlers must resolve promises (`@typescript-eslint/no-misused-promises`).
 - Planning/spec work must also read `openspec/AGENTS.md`; observe nested instructions:
   - `docs/`: follow `docs/AGENTS.md` for documentation style.
+
+## ESLint & Type Safety Rules
+
+- **Never disable ESLint rules** (`eslint-disable`, `eslint-disable-next-line`) without explicit user confirmation. The configured rules exist for a reason.
+- When lint errors occur, fix the underlying issue rather than suppressing warnings.
+- If a rule seems incorrect, ask the user before disabling it—they may need to update the config.
+
+### TypeScript Type Resolution Hierarchy
+
+When solving type issues, follow this preference order (best to last resort):
+
+1. **Infer**: Let TypeScript infer types naturally from context, return values, and usage.
+2. **`satisfies`**: Use `value satisfies Type` to validate without widening the inferred type.
+3. **`: Type`**: Explicit annotation `const value: Type = ...` when inference isn't sufficient.
+4. **`as Type`**: Type assertion only when you have more context than TypeScript (avoid when possible).
+5. **`as any`**: Never use except in extraordinary circumstances with user approval.
+
+Always solve the actual type issue rather than using type assertions as workarounds.
