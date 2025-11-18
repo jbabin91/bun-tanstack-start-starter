@@ -228,6 +228,66 @@ TanStack Router has its own loader caching. When to use which?
 
 Most dynamic data should use Query for caching and refetching benefits.
 
+## Practical Tips
+
+### The enabled Option is Powerful
+
+The `enabled` option lets you conditionally execute queries:
+
+```ts
+// Wait for user input before querying
+useQuery({
+  ...searchOptions(term),
+  enabled: term.length > 0,
+});
+
+// Dependent queries (wait for first query to complete)
+const { data: user } = useQuery(userOptions());
+const { data: posts } = useQuery({
+  ...userPostsOptions(user?.id),
+  enabled: !!user?.id,
+});
+
+// Pause polling when modal is open
+useQuery({
+  ...liveDataOptions(),
+  refetchInterval: 5000,
+  enabled: !isModalOpen,
+});
+```
+
+Use cases:
+
+- **Dependent queries**: Fetch data in sequence when one depends on another
+- **Turn queries on/off**: Pause polling, wait for user action, pause background updates
+- **Wait for user input**: Don't query until filter criteria are applied
+
+### Create Custom Hooks
+
+Even for simple queries, custom hooks provide benefits:
+
+```ts
+// ✅ Custom hook
+export const useUserQuery = () => useQuery(userOptions());
+
+// Component
+function UserProfile() {
+  const { data } = useUserQuery();
+  return <Profile data={data} />;
+}
+```
+
+Benefits:
+
+- Co-locate data fetching logic with query configuration
+- Keep all usages of one query key in a single file
+- Easier to add transformations or tweak settings later
+- Cleaner component code
+
+### Don't Use queryClient.setQueryData for Local State
+
+`queryClient.setQueryData` is for optimistic updates or writing server data, not local UI state. Background refetches will overwrite manual changes. Use React state, Zustand, or other state management for client-only state.
+
 ## Next Steps
 
 - **[important-defaults.md](./important-defaults.md)** - Understand Query's default behavior

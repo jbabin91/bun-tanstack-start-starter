@@ -49,6 +49,26 @@ useQuery({
 });
 ```
 
+## Avoiding Hard Loading States with initialData
+
+When a new query key triggers (e.g., filtering from 'all' to 'done' todos), a new cache entry creates a hard loading state. You can improve UX by pre-filling with client-side filtering:
+
+```ts
+export const useTodosQuery = (state: State) =>
+  useQuery({
+    queryKey: ['todos', state],
+    queryFn: () => fetchTodos(state),
+    initialData: () => {
+      const allTodos = queryClient.getQueryData<Todos>(['todos', 'all']);
+      const filteredData =
+        allTodos?.filter((todo) => todo.state === state) ?? [];
+      return filteredData.length > 0 ? filteredData : undefined;
+    },
+  });
+```
+
+This shows filtered results from the 'all todos' cache instantly while the background fetch runs, eliminating the spinner for a smoother experience.
+
 ## Pagination Smoothness
 
 With `useQuery` pagination (non-infinite) use `keepPreviousData` pattern when switching page numbers:

@@ -48,6 +48,20 @@ Include all parameters that affect returned data:
 
 If sort changes but key excludes it, stale data persists incorrectly.
 
+### Treat Query Key Like a Dependency Array
+
+Think of the query key like `useEffect`'s dependency array: when the key changes, React Query automatically refetches. Include any variable that your `queryFn` depends on:
+
+```ts
+export const useTodosQuery = (state: 'all' | 'open' | 'done') =>
+  useQuery({
+    queryKey: ['todos', state],
+    queryFn: () => fetchTodos(state),
+  });
+```
+
+When `state` changes in your UI, the query key changes, triggering a refetch—no manual `useEffect` orchestration needed. This keeps your filter selection in sync with the query function automatically.
+
 ## Conditional Segments
 
 Avoid optional trailing `undefined` by explicitly handling condition:

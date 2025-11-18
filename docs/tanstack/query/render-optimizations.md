@@ -2,9 +2,46 @@
 
 Reduce unnecessary renders by controlling what changes trigger updates.
 
+## Understanding Re-Renders
+
+React Query triggers re-renders when query meta information changes. Even if your data doesn't change, properties like `isFetching` will cause re-renders during background refetches:
+
+```ts
+// Component re-renders twice during background refetch:
+{ status: 'success', data: 2, isFetching: true }
+{ status: 'success', data: 2, isFetching: false }
+```
+
+This is usually fine—unnecessary re-renders are better than missing updates. Only optimize if you have performance issues.
+
 ## Structural Sharing
 
-Query caches use structural sharing to minimize object identity changes. Prefer immutable updates in `setQueryData` and avoid deep cloning unless needed.
+Query caches use structural sharing to preserve referential identity at every level. When data updates, React Query compares old and new states:
+
+```json
+// Before
+[
+  { "id": 1, "name": "Learn React", "status": "active" },
+  { "id": 2, "name": "Learn React Query", "status": "todo" }
+]
+
+// After (id 1 changed)
+[
+  { "id": 1, "name": "Learn React", "status": "done" },
+  { "id": 2, "name": "Learn React Query", "status": "todo" }
+]
+```
+
+The object with `id: 2` keeps the same reference—React Query copies it over unchanged. This is crucial for selectors:
+
+```ts
+// ✅ Only re-renders if todo with id:2 changes (thanks to structural sharing)
+const { data } = useTodo(2);
+```
+
+**With `select`**: Structural sharing happens twice—once on the `queryFn` result, once on the `select` result.
+
+**Performance note**: Structural sharing can be expensive on very large datasets. Disable with `structuralSharing: false` if needed. Only works on JSON-serializable data.
 
 ## `select` for Slices
 
@@ -19,14 +56,67 @@ const { data: total } = useQuery({
 
 ## `notifyOnChangeProps`
 
-Limit which properties trigger re-renders.
+Limit which properties trigger re-renders by specifying which fields the component cares about:
 
 ```tsx
-const result = useQuery({
-  ...heavyOptions(),
-  notifyOnChangeProps: ['data', 'isFetching'],
+export const useTodosQuery = (select, notifyOnChangeProps) =>
+  useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+    select,
+    notifyOnChangeProps,
+  });
+
+// Only re-renders when data changes (not isFetching)
+export const useTodosCount = () =>
+  useTodosQuery((data) => data.length, ['data']);
+```
+
+**Caveat**: Manually maintaining this list is error-prone. If you add `error` usage but forget to update `notifyOnChangeProps`, your component won't re-render on errors.
+
+### Tracked Queries (Recommended)
+
+Set `notifyOnChangeProps: 'tracked'` (default in v4+) to automatically track which fields you access:
+
+```tsx
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      notifyOnChangeProps: 'tracked', // Default in v4+
+    },
+  },
 });
 ```
+
+React Query tracks field access during render and only notifies on changes to those fields. This eliminates manual maintenance.
+
+**Limitations:**
+
+- **Object rest destructuring** tracks all fields:
+
+  ```ts
+  // ❌ Tracks everything
+  const { isLoading, ...queryInfo } = useQuery(...);
+
+  // ✅ Fine
+  const { isLoading, data } = useQuery(...);
+  ```
+
+- **Effects**: Only fields accessed during render are tracked. Dependency arrays usually solve this:
+
+  ```ts
+  // ❌ Won't track data
+  React.useEffect(() => {
+    console.log(queryInfo.data);
+  });
+
+  // ✅ Tracks data (accessed in dependency array during render)
+  React.useEffect(() => {
+    console.log(queryInfo.data);
+  }, [queryInfo.data]);
+  ```
+
+- **No reset**: Once a field is tracked, it's tracked for the observer's lifetime. If you conditionally access `data`, it remains tracked even when the condition is false.
 
 ## Stable Callbacks and Props
 

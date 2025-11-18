@@ -57,6 +57,31 @@ export function criticalDataOptions() {
 }
 ```
 
+## Keep Server and Client State Separate
+
+Avoid copying query data into local state unless you have a specific reason (like initializing a form). Copying opts you out of background updates:
+
+```tsx
+// ❌ Loses background updates
+const { data } = useQuery(userOptions());
+const [user, setUser] = React.useState(data);
+
+// ✅ Always shows latest
+const { data: user } = useQuery(userOptions());
+```
+
+If you need to initialize a form, set `staleTime: Infinity` to prevent unnecessary background fetches:
+
+```tsx
+const { data } = useQuery({
+  ...formDefaults(),
+  staleTime: Infinity,
+});
+return data ? <MyForm initialData={data} /> : null;
+```
+
+For editable data, keep server state and draft state separate—don't merge them into one local state variable.
+
 ## Selecting Data
 
 Use `select` to derive view data and minimize re-renders:
