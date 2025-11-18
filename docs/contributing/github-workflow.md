@@ -7,6 +7,9 @@ A practical guide for deciding when to use the VS Code MCP GitHub tools vs the `
 - Are you doing GitHub actions from inside VS Code with the AI agent?
   - Yes → Prefer MCP GitHub tools (structured, reproducible, tracked)
   - No → Prefer `gh` CLI for fast, interactive commands
+- Are you discovering related PRs/repos/code across orgs?
+  - Yes → MCP: Search tools (broad discovery, code/PR/repo search)
+  - No → Use GitHub web search/code search as needed
 - Are you drafting a PR review before submitting?
   - Yes → MCP: Pending Review tools (draft, batch, then submit)
   - No → MCP: Review tools (publish comments) or `gh pr review`
@@ -33,19 +36,21 @@ Tool categories available to the agent:
 - Pull Requests: create/update/merge, update branches
 - Pending Reviews: draft comments, then submit review
 - Reviews: add comments to active discussions
+- Search: search across repositories, PRs, and code
 - Workflows: list/rerun jobs, update workflow runs
 - Workflow Failures: fetch and summarize failed job logs
 - Issues & Alerts: create/update issues, review alerts
 - Discussions: list and retrieve discussions
 - Repository Overview: branches, releases, advisories
 
-See tool names in code: `activate_pull_request_management_tools`, `activate_pending_review_tools`, `activate_pull_request_review_tools`, `activate_workflow_management_tools`, `activate_workflow_failure_analysis_tools`, `activate_issue_and_alert_management_tools`, `activate_discussion_management_tools`, `activate_repository_overview_tools`.
+See tool names in code: `activate_pull_request_management_tools`, `activate_pending_review_tools`, `activate_pull_request_review_tools`, `activate_workflow_management_tools`, `activate_workflow_failure_analysis_tools`, `activate_issue_and_alert_management_tools`, `activate_discussion_management_tools`, `activate_repository_overview_tools`, `activate_search_tools`.
 
 ### Use `gh` CLI when
 
 - You’re working in a terminal and prefer quick, interactive flows
 - You need features not exposed by current MCP tools
 - You want to script repeatable workflows in CI/local scripts
+- For discovery, you can also use GitHub web search and code search
 
 Authenticate first:
 
@@ -103,6 +108,9 @@ Key points:
 - Merge a green PR
   - MCP: Merge PR (squash/merge/rebase)
   - CLI: `gh pr merge --squash --delete-branch`
+- Search for prior art or related work
+  - MCP: Search tools to find existing PRs/code across repos
+  - Web: GitHub code search to refine results
 - Open an issue and link it to a PR
   - MCP: Issue Management + PR updates
   - CLI: `gh issue create` then reference in PR description
