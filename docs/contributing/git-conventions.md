@@ -142,6 +142,20 @@ Benefits:
 - Pre-commit hooks run cleanly and report precisely
 - Safer handling of longer commit messages and bullets
 
+## When to Split Commits
+
+Use this checklist to decide if you should split changes into multiple commits:
+
+- Different concerns are mixed (feature, refactor, tests, docs, config)
+- Multiple scopes/types apply (e.g., `feat(query)` and `refactor(hooks)`)
+- A single clear header cannot summarize the change
+- You need more than 8 bullets to explain the change
+- Parts of the change could be reverted independently
+- Some files are mechanical (format/rename) while others are behavioral
+- Refactor-only changes can be separated from behavior changes
+
+If any item matches, split your work into smaller, focused commits.
+
 ## Quick Aliases
 
 Configured in `.commitlintrc.js` for common patterns:
