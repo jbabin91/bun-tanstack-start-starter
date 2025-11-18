@@ -110,8 +110,8 @@ docs/
 
 ## Getting Help
 
-- **Questions?** Open a [GitHub Discussion](../../discussions)
-- **Bug?** Check [troubleshooting](../troubleshooting.md)
+- **Questions?** Open a [GitHub Discussion](https://github.com/your-org/bun-tanstack-start-starter/discussions)
+- **Bug?** [Open an issue](https://github.com/your-org/bun-tanstack-start-starter/issues)
 - **Documentation:** Browse [docs/](../)
 
 ## Resources
