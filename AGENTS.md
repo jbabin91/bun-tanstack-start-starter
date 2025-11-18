@@ -30,14 +30,21 @@ Use the integration-specific AGENTS.md for focused guidance:
 
 Each AGENTS.md links to its overview and topic docs. Start with the relevant file based on your task; if unsure, open Router first, then follow cross-links to Query or Start.
 
-## Git Conventions
+## Contributing Guidelines
 
-Follow the commit conventions documented in `@/docs/git-conventions.md`:
+Follow the contribution guidelines in `@/docs/contributing/`:
 
-- Use conventional commits with gitmojis
-- Format: `<type>(<scope>): <gitmoji> <description>`
+- **Git conventions**: `@/docs/contributing/git-conventions.md` — Commit format, gitmojis, scopes, validation
+- **Development setup**: `@/docs/contributing/development-setup.md` — Environment setup, tooling, IDE config
+- **Coding standards**: `@/docs/contributing/coding-standards.md` — TypeScript patterns, React conventions, styling
+- **PR workflow**: `@/docs/contributing/pull-request-workflow.md` — Creating and reviewing pull requests
+- **GitHub workflow**: `@/docs/contributing/github-workflow.md` — MCP tools vs gh CLI usage
+
+Quick reference:
+
+- Use conventional commits with gitmojis: `<type>(<scope>): <gitmoji> <description>`
 - Pre-commit hooks run automatically (typecheck, lint, format, markdown lint)
-- Commitlint validates message format on commit
+- All commits validated by commitlint via lefthook
 
 ## Workflow
 
