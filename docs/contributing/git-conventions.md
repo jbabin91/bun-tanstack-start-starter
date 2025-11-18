@@ -12,6 +12,13 @@ Follow the cz-git configuration from `.commitlintrc.js` with gitmojis enabled.
 [optional footer(s)]
 ```
 
+## Commit Granularity & Grouping
+
+- **Group related changes**: Stage and commit files that belong to the same logical change.
+- **Avoid mass commits**: Do not commit large, unrelated changes together unless absolutely necessary.
+- **One area per commit**: Prefer separate commits for docs, code, config, and tests if they can stand alone.
+- **Narrative history**: Each commit should tell a precise story and be easy to revert.
+
 ## Type → Gitmoji Mapping
 
 Based on standard gitmojis and the cz-git configuration:
@@ -104,9 +111,36 @@ git commit -m "revert: :rewind: revert previous commit changes"
 - **Types**: Must be from allowed list (feat, fix, docs, style, refactor, perf, test, chore, ci, revert)
 - **Scope**: Optional, lowercase, from predefined list or use 'custom'
 - **Subject**: Imperative mood, no period, no sentence case
-- **Header**: Max 200 characters
-- **Body**: No line length limit
+- **Header**: Keep concise, maximum 100 characters
+- **Body**: Optional; if included, prefer 3–8 concise bullet points
 - **Gitmojis**: Always include the appropriate gitmoji code (e.g., :sparkles:)
+
+### Body Guidelines
+
+- Use short, one-line bullets that add context not obvious from the diff.
+- Focus on intent, constraints, and impacts; avoid duplicating code details.
+- If a change affects multiple areas, create separate commits per area instead of a long body.
+
+## Commit Workflow (Terminals)
+
+Avoid chaining complex commands in one call. Run steps separately for reliability:
+
+```bash
+# 1) Validate / fix
+bun --bun markdownlint-cli2 --fix "changed-file.md"
+
+# 2) Stage
+git add changed-file.md
+
+# 3) Commit (header ≤ 100 chars; optional 3–8 bullets)
+git commit -m "docs(contributing): :memo: clarify commit granularity"
+```
+
+Benefits:
+
+- Clear feedback at each step, easier to spot failures
+- Pre-commit hooks run cleanly and report precisely
+- Safer handling of longer commit messages and bullets
 
 ## Quick Aliases
 
