@@ -1,5 +1,7 @@
 # Overview
 
+Related ADR: [0003 — Adopt TanStack Query](../../../openspec/specs/architecture/adrs/0003-tanstack-query.md)
+
 ## What is TanStack Query?
 
 TanStack Query is a data synchronization library for React that manages server state—asynchronous data that originates from a server and needs to be cached, synchronized, and updated on the client.

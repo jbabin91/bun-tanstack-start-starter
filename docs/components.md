@@ -1,5 +1,7 @@
 # Components
 
+Related ADR: [0004 — UI Component Strategy: Base UI + COSS UI](../openspec/specs/architecture/adrs/0004-base-ui-and-coss-ui.md)
+
 These notes describe how to extend or consume the UI primitives under `src/components/ui`.
 
 ## Source of truth

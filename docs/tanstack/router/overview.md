@@ -1,5 +1,7 @@
 # TanStack Router Overview
 
+Related ADR: [0002 — Adopt TanStack Start + TanStack Router](../../../openspec/specs/architecture/adrs/0002-tanstack-start-and-router.md)
+
 TanStack Router provides a type-safe routing system for React (and Solid) with built-in caching, loader orchestration, and file/code routing parity.
 
 ## Core capabilities

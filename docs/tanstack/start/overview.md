@@ -1,5 +1,7 @@
 # TanStack Start Overview
 
+Related ADR: [0002 — Adopt TanStack Start + TanStack Router](../../../openspec/specs/architecture/adrs/0002-tanstack-start-and-router.md)
+
 TanStack Start is a full-stack framework that layers server rendering, routing, and server functions on top of TanStack Router and Vite. It keeps the client-first developer experience of TanStack Router but adds:
 
 - **Full-document SSR + streaming** for fast first paint.
