@@ -47,23 +47,13 @@ cd /path && ls -la
 git status && git log --oneline -1
 ```
 
-## Commit Message Format
+## Commit Conventions
 
-Always use the format from `.commitlintrc.js`:
+For complete commit rules (types, scopes, gitmojis, header/body limits, examples), follow:
 
-```text
-<type>(<scope>): <gitmoji> <description>
+- `docs/contributing/git-conventions.md`
 
-[optional body with bullet points]
-```
-
-**Important**:
-
-- Keep the header (first line) under 100 characters
-- Use the body for detailed explanations
-- **Commit message bodies have length limits too** - keep total message under ~1000 characters
-- For large changes affecting multiple areas, create **separate commits per area** instead of one massive commit message
-- If a single commit message would be too long, that's a sign to break the work into multiple commits
+Use that document as the single source of truth; do not duplicate details here.
 
 ## File Operations
 
