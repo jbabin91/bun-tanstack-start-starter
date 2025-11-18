@@ -78,6 +78,27 @@ useQuery({
 
 Use `initialData` for client-only bootstrap and `placeholderData` for cosmetic smoothing, not as substitutes for SSR prefetch on critical content.
 
+## Seeding the Cache (Programmatically)
+
+Seed specific queries when you already have data (e.g., from a websocket, post-redirect page):
+
+```ts
+queryClient.setQueryData(userOptions(id).queryKey, user);
+```
+
+Or seed multiple related queries in a single transition:
+
+```ts
+queryClient.setQueryData(postDetailOptions(id).queryKey, post);
+queryClient.setQueryData(postCommentsOptions(id).queryKey, comments);
+```
+
+Seeding provides instant UI without fetching. Consider a follow-up `invalidateQueries` to reconcile with the server when appropriate.
+
+## Further Reading
+
+- Seeding the Query Cache: <https://tkdodo.eu/blog/seeding-the-query-cache>
+
 ## Further Reading
 
 - Placeholder vs Initial Data: <https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query>

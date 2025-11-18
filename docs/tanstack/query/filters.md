@@ -37,3 +37,4 @@ Encode true data differences in keys; prefer `select` for lightweight client-onl
 ## Further Reading
 
 - Data Transformations: <https://tkdodo.eu/blog/react-query-data-transformations>
+- Selectors Supercharged: <https://tkdodo.eu/blog/react-query-selectors-supercharged>

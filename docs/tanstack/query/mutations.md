@@ -200,3 +200,4 @@ Mutations update server state. Prefer direct cache updates for cheap operations;
 ## Further Reading
 
 - Mastering Mutations: <https://tkdodo.eu/blog/mastering-mutations-in-react-query>
+- React Query and Forms: <https://tkdodo.eu/blog/react-query-and-forms>

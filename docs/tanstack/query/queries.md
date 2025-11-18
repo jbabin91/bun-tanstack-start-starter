@@ -119,12 +119,12 @@ const state = useQueryState(postsOptions().queryKey);
 if (state?.status === 'pending') {
   /* show skeleton */
 }
+```
 
 ## Further Reading
 
 - Status Checks in React Query: <https://tkdodo.eu/blog/status-checks-in-react-query>
 - Error Handling: <https://tkdodo.eu/blog/react-query-error-handling>
-```
 
 ## Anti-Patterns
 

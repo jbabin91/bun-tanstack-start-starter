@@ -177,3 +177,7 @@ onMutate: async (newText) => {
 ## Summary
 
 Structure infinite queries around stable factory keys, control memory with `maxPages`, integrate filters via search params, and favor targeted page edits over broad invalidation.
+
+## Further Reading
+
+- How Infinite Queries Work: <https://tkdodo.eu/blog/how-infinite-queries-work>

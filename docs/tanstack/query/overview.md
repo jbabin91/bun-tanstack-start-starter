@@ -239,3 +239,9 @@ Most dynamic data should use Query for caching and refetching benefits.
 
 - [TanStack Query Official Docs](https://tanstack.com/query/latest/docs/framework/react/overview)
 - [Practical React Query](https://tkdodo.eu/blog/practical-react-query) - Excellent blog series
+
+## Further Reading (Concepts)
+
+- Why You Want React Query: <https://tkdodo.eu/blog/why-you-want-react-query>
+- You Might Not Need React Query: <https://tkdodo.eu/blog/you-might-not-need-react-query>
+- Thinking in React Query: <https://tkdodo.eu/blog/thinking-in-react-query>

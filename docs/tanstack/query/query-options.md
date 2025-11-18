@@ -190,6 +190,27 @@ it('builds detail key correctly', () => {
 - The Query Options API (blog): [https://tkdodo.eu/blog/the-query-options-api](https://tkdodo.eu/blog/the-query-options-api)
 - Official: Query Options — <https://tanstack.com/query/latest/docs/framework/react/reference/useQuery>
 
+## TypeScript Tips
+
+- Prefer inference via factories. Use `as const` on array keys to keep tuple types narrow.
+- Validate shapes without widening using `satisfies`:
+
+```ts
+const key = ['posts', 'detail', id] as const;
+const options = {
+  queryKey: key,
+  queryFn: () => getPostFn(id),
+} satisfies Parameters<typeof queryClient.prefetchQuery>[0];
+```
+
+- Extract types from factories with `ReturnType` when composing:
+
+```ts
+type PostDetailOptions = ReturnType<typeof postDetailOptions>;
+```
+
+Further Reading: <https://tkdodo.eu/blog/type-safe-react-query>
+
 ## Summary
 
 Use hierarchical factory namespaces returning `queryOptions` to ensure consistent, type-safe, and easily reusable queries across loaders, components, parallel querying, mutations, and tests.

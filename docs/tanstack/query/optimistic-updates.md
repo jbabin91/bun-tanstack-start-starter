@@ -138,3 +138,7 @@ const deleteTodo = useMutation({
 ## Summary
 
 Optimistic updates are powerful for fast feedback. Use them narrowly, maintain clear rollback contexts, mark stubs distinctly, and prefer direct cache edits over broad invalidations when feasible.
+
+## Further Reading
+
+- Concurrent Optimistic Updates: <https://tkdodo.eu/blog/concurrent-optimistic-updates-in-react-query>

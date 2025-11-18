@@ -42,3 +42,5 @@ Not in this project. Prefer explicit factories for type safety and clarity.
 ## Further Reading
 
 - React Query as a State Manager: <https://tkdodo.eu/blog/react-query-as-a-state-manager>
+- React Query FAQs: <https://tkdodo.eu/blog/react-query-fa-qs>
+- React Query – The Bad Parts: <https://tkdodo.eu/blog/react-query-the-bad-parts>
