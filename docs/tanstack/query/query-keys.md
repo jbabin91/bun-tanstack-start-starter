@@ -105,6 +105,74 @@ for (const q of queryClient.getQueryCache().findAll()) {
 
 (Reserve for diagnostics only.)
 
+## Colocate Keys with Queries
+
+Keep query keys and query functions together in feature directories, not in a global `/utils/queryKeys.ts`. Colocate for maintainability:
+
+```text
+src/
+  features/
+    Profile/
+      index.tsx
+      queries.ts    # Keys, factories, hooks here
+    Todos/
+      index.tsx
+      queries.ts
+```
+
+Export custom hooks from `queries.ts`; keep keys and query functions private to the module.
+
+## Query Key Factories
+
+Avoid manual key duplication—use factory objects:
+
+```ts
+const todoKeys = {
+  all: () => ['todos'] as const,
+  lists: () => [...todoKeys.all(), 'list'] as const,
+  list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
+  details: () => [...todoKeys.all(), 'detail'] as const,
+  detail: (id: number) => [...todoKeys.details(), id] as const,
+};
+
+// Usage
+queryClient.removeQueries({ queryKey: todoKeys.all() }); // Remove all todos
+queryClient.invalidateQueries({ queryKey: todoKeys.lists() }); // Invalidate all lists
+queryClient.prefetchQuery({
+  queryKey: todoKeys.detail(id),
+  queryFn: () => fetchTodo(id),
+});
+```
+
+Each level builds on the previous, enabling flexible invalidation at any granularity.
+
+## Queries are Declarative
+
+Don't pass parameters to `refetch`—change the query key instead:
+
+```tsx
+// ❌ Trying to pass params to refetch
+function Component() {
+  const { data, refetch } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodos,
+  });
+  return <Filters onApply={() => refetch(???)} />; // How to pass filters?
+}
+
+// ✅ Let the key drive the query
+function Component() {
+  const [filters, setFilters] = React.useState();
+  const { data } = useQuery({
+    queryKey: ['todos', filters],
+    queryFn: () => fetchTodos(filters),
+  });
+  return <Filters onApply={setFilters} />; // State change triggers refetch
+}
+```
+
+When `filters` changes, the key changes, and React Query automatically refetches. No manual `refetch` orchestration needed.
+
 ## Anti-Patterns
 
 | Anti-pattern                            | Fix                                        |
@@ -113,6 +181,8 @@ for (const q of queryClient.getQueryCache().findAll()) {
 | Omitting filter from key                | Include every filter dimension             |
 | Passing non-serializable objects        | Extract primitives (ids, strings)          |
 | Duplicating factory logic inline        | Centralize in namespace factories          |
+| Global `/utils/queryKeys.ts`            | Colocate keys with features                |
+| Trying to pass params to `refetch`      | Change query key instead                   |
 
 ## Cross-References
 

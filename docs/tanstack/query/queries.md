@@ -82,6 +82,34 @@ return data ? <MyForm initialData={data} /> : null;
 
 For editable data, keep server state and draft state separate—don't merge them into one local state variable.
 
+## Status Checks: Check Data First
+
+When queries aggressively refetch (window focus, reconnect), background errors can replace valid stale data. Check for data availability first:
+
+```tsx
+// ❌ Standard pattern can be confusing
+const todos = useTodos();
+if (todos.isPending) return 'Loading...';
+if (todos.error) return 'Error: ' + todos.error.message;
+return <div>{todos.data.map(renderTodo)}</div>;
+```
+
+Problem: If a background refetch fails, you have both `error` and stale `data`. Showing the error screen removes working data from the user.
+
+```tsx
+// ✅ Check data first for better UX
+const todos = useTodos();
+if (todos.data) {
+  return <div>{todos.data.map(renderTodo)}</div>;
+}
+if (todos.error) return 'Error: ' + todos.error.message;
+return 'Loading...';
+```
+
+Now stale data stays visible during background errors. Users see the last known good state instead of an error screen. Consider showing a background error indicator if needed.
+
+**Context**: With `refetchOnWindowFocus`, `refetchOnReconnect`, and retry attempts (3 retries × exponential backoff), background fetches can take seconds. Replacing data with an error during this time is jarring.
+
 ## Selecting Data
 
 Use `select` to derive view data and minimize re-renders:
