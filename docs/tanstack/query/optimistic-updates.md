@@ -135,9 +135,145 @@ const deleteTodo = useMutation({
 - Invalidation strategies: `./query-invalidation.md`
 - Query factories: `./query-options.md`
 
+## Concurrent Optimistic Updates
+
+### Window of Inconsistency
+
+When mutations happen while queries are in-flight, optimistic updates can be overwritten:
+
+```text
+Timeline:
+1. Query starts (window focus refetch)
+2. User triggers mutation (optimistic update applied)
+3. Query settles (overwrites optimistic update) ⚠️
+4. Mutation settles (refetch corrects data)
+```
+
+This creates a brief "flicker" where the UI shows stale data between steps 3-4.
+
+**Query cancellation helps:**
+
+```ts
+onMutate: async () => {
+  // Cancel in-flight queries to prevent overwrite
+  await queryClient.cancelQueries({
+    queryKey: ['todos', id],
+  });
+  // ... optimistic update
+};
+```
+
+Now mutations cancel conflicting queries when they start, preventing the overwrite.
+
+### Concurrent Mutation Problem
+
+Query cancellation doesn't solve everything. Consider:
+
+```text
+Timeline:
+1. Mutation A starts (optimistic update A)
+2. Mutation B starts (optimistic update B)
+3. Mutation A settles (invalidates queries, refetch starts)
+4. Refetch settles (overwrites optimistic update B) ⚠️
+5. Mutation B settles (refetch corrects data)
+```
+
+Mutation B can't cancel the refetch from Mutation A because there's nothing in-flight when B starts.
+
+### Preventing Over-Invalidation
+
+Skip invalidations when other mutations are in progress:
+
+```ts
+const useToggleIsActive = (id: number) =>
+  useMutation({
+    mutationKey: ['todos', 'toggle'],
+    mutationFn: api.toggleIsActive,
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['todos', 'detail', id],
+      });
+
+      // Optimistic update
+      queryClient.setQueryData(['todos', 'detail', id], (prev) =>
+        prev ? { ...prev, isActive: !prev.isActive } : undefined,
+      );
+    },
+    onSettled: () => {
+      // ✅ Only invalidate if no other mutations are running
+      if (queryClient.isMutating() === 1) {
+        queryClient.invalidateQueries({
+          queryKey: ['todos', 'detail', id],
+        });
+      }
+    },
+  });
+```
+
+**Why `=== 1`?** When `onSettled` runs, the current mutation is still in progress, so the count will never be 0. We check for 1 to ensure no _other_ mutations are running.
+
+**Imperative timing:** Use `queryClient.isMutating()` (imperative), not `useIsMutating()` (hook), to avoid stale closure issues. We need the count _right before_ invalidating.
+
+### Limiting Scope with mutationKey
+
+The above check is too broad—it skips invalidation if _any_ mutation is running. Scope it with `mutationKey`:
+
+```ts
+const useToggleIsActive = (id: number) =>
+  useMutation({
+    mutationKey: ['todos', 'toggle'], // ✅ Tag related mutations
+    mutationFn: api.toggleIsActive,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['todos', 'detail', id] });
+      queryClient.setQueryData(['todos', 'detail', id], (prev) =>
+        prev ? { ...prev, isActive: !prev.isActive } : undefined,
+      );
+    },
+    onSettled: () => {
+      // ✅ Only skip if another 'todos/toggle' mutation is running
+      if (queryClient.isMutating({ mutationKey: ['todos', 'toggle'] }) === 1) {
+        queryClient.invalidateQueries({ queryKey: ['todos', 'detail', id] });
+      }
+    },
+  });
+```
+
+Now unrelated mutations (e.g., creating a new todo) won't prevent this invalidation.
+
+### Final Flow
+
+```text
+Timeline (with fix):
+1. Query starts (window focus refetch)
+2. Mutation A starts (cancels query, optimistic update A)
+3. Mutation B starts (no query to cancel, optimistic update B)
+4. Mutation A settles (checks isMutating === 1? No, skips invalidation) ✅
+5. Mutation B settles (checks isMutating === 1? Yes, invalidates) ✅
+6. Refetch settles (correct data)
+```
+
+No flickering. Last mutation wins and triggers the refetch.
+
+### Practical Considerations
+
+**Use mutation keys consistently:**
+
+```ts
+// All todo mutations share prefix
+const useTodoMutation = (action: string) =>
+  useMutation({
+    mutationKey: ['todos', action],
+    // ...
+  });
+```
+
+**Tradeoff:** This pattern assumes concurrent mutations affect the same data. If they're independent, use different mutation keys.
+
+**When not to use:** If you invalidate everything at the end anyway (e.g., `invalidateQueries({ queryKey: [] })`), this optimization is unnecessary.
+
 ## Summary
 
-Optimistic updates are powerful for fast feedback. Use them narrowly, maintain clear rollback contexts, mark stubs distinctly, and prefer direct cache edits over broad invalidations when feasible.
+Optimistic updates are powerful for fast feedback. Use them narrowly, maintain clear rollback contexts, mark stubs distinctly, and prefer direct cache edits over broad invalidations when feasible. For concurrent mutations, prevent over-invalidation with `isMutating` checks scoped to relevant mutation keys.
 
 ## Further Reading
 

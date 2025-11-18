@@ -389,6 +389,279 @@ Benefits:
 - [TanStack Query Official Docs](https://tanstack.com/query/latest/docs/framework/react/overview)
 - [Practical React Query](https://tkdodo.eu/blog/practical-react-query) - Excellent blog series
 
+## Why You Want React Query: The 5 Bugs You Avoid
+
+"We just need to fetch data, how hard can it be?" Here's a naive implementation:
+
+```ts
+function Bookmarks({ category }: { category: string }) {
+  const [data, setData] = useState([]);
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    fetch(`${endpoint}/${category}`)
+      .then((res) => res.json())
+      .then((d) => setData(d))
+      .catch((e) => setError(e));
+  }, [category]);
+
+  // Return JSX based on data and error state
+}
+```
+
+This code has **5 bugs:**
+
+### 1. Race Condition 🏎
+
+Network responses can arrive out of order. If you switch from `books` to `movies`, and the `movies` response arrives before `books`, you'll show `books` data with `movies` selected.
+
+**Fix:** Add an `ignore` flag in the cleanup function:
+
+```ts
+useEffect(() => {
+  let ignore = false;
+  fetch(`${endpoint}/${category}`)
+    .then((res) => res.json())
+    .then((d) => {
+      if (!ignore) setData(d);
+    })
+    .catch((e) => {
+      if (!ignore) setError(e);
+    });
+  return () => {
+    ignore = true;
+  };
+}, [category]);
+```
+
+**With Query:** React Query stores data by QueryKey. When `category` changes, the key changes, so data is always consistent.
+
+### 2. No Loading State 🕐
+
+There's no way to show a pending UI during fetches.
+
+**Fix:** Add `isLoading` state:
+
+```ts
+const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+  let ignore = false;
+  setIsLoading(true);
+  fetch(`${endpoint}/${category}`)
+    .then((res) => res.json())
+    .then((d) => {
+      if (!ignore) setData(d);
+    })
+    .catch((e) => {
+      if (!ignore) setError(e);
+    })
+    .finally(() => {
+      if (!ignore) setIsLoading(false);
+    });
+  return () => {
+    ignore = true;
+  };
+}, [category]);
+```
+
+**With Query:** `isLoading`, `data`, and `error` are provided automatically with discriminated unions.
+
+### 3. Empty State 🗑️
+
+Initializing `data` with `[]` means you can't distinguish "no data yet" from "no data at all" (empty response).
+
+**Fix:** Initialize with `undefined`:
+
+```ts
+const [data, setData] = useState<Item[] | undefined>();
+```
+
+**With Query:** Data is `undefined` until the first fetch succeeds, making empty states clear.
+
+### 4. Stale Data & Error Not Reset 🔄
+
+When `category` changes, `data` and `error` from the previous category persist until the new fetch completes. This leads to rendering old errors with new data (or vice versa).
+
+**Fix:** Reset both on each effect run:
+
+```ts
+useEffect(() => {
+  let ignore = false;
+  setIsLoading(true);
+  fetch(`${endpoint}/${category}`)
+    .then((res) => res.json())
+    .then((d) => {
+      if (!ignore) {
+        setData(d);
+        setError(undefined);
+      }
+    })
+    .catch((e) => {
+      if (!ignore) {
+        setError(e);
+        setData(undefined);
+      }
+    })
+    .finally(() => {
+      if (!ignore) setIsLoading(false);
+    });
+  return () => {
+    ignore = true;
+  };
+}, [category]);
+```
+
+**With Query:** You never get data/error from a previous category unless you opt into it (e.g., `placeholderData`).
+
+### 5. Fires Twice in StrictMode 🔥🔥
+
+In development, React StrictMode intentionally calls effects twice to find bugs. Your fetch runs twice on mount.
+
+**Fix:** Add another ref workaround (not worth it).
+
+**With Query:** Multiple fetches are efficiently deduplicated. If two components request the same QueryKey simultaneously, only one network request fires.
+
+### Bonus: Error Handling 🚨
+
+`fetch` doesn't reject on HTTP errors. You need to check `res.ok`:
+
+```ts
+fetch(`${endpoint}/${category}`).then((res) => {
+  if (!res.ok) throw new Error('Failed to fetch');
+  return res.json();
+});
+```
+
+**With Query:** Same—you still write this in your `queryFn`. But at least Query handles the promise rejection correctly.
+
+### React Query Fixes All 5 Bugs
+
+The fixed code is 50% larger than the original. With Query:
+
+```ts
+function Bookmarks({ category }: { category: string }) {
+  const { isLoading, data, error } = useQuery({
+    queryKey: ['bookmarks', category],
+    queryFn: () =>
+      fetch(`${endpoint}/${category}`).then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch');
+        return res.json();
+      }),
+  });
+
+  // Return JSX based on data and error state
+}
+```
+
+**Summary of fixes:**
+
+- 🏎️ No race condition (state stored by key)
+- 🕐 Loading/error states for free
+- 🗑️ Empty states clearly separated
+- 🔄 No stale data/error from previous keys
+- 🔥 Deduplication handles StrictMode
+
+**Key insight:** Data fetching is simple. Async state management is not. React Query is an async state manager, not a data fetching library.
+
+## When You Might Not Need React Query
+
+### Frameworks with Built-In Solutions
+
+If your framework has first-class data fetching, use it:
+
+**React Server Components (Next.js App Router, TanStack Start with selective SSR):**
+
+```tsx
+// Server Component
+export default async function Page() {
+  const data = await fetch('https://api.github.com/repos/tanstack/react-query');
+  return (
+    <div>
+      <h1>{data.name}</h1>
+      <p>{data.description}</p>
+    </div>
+  );
+}
+```
+
+If your data fetching happens exclusively on the server, you don't need client-side cache management.
+
+**Remix loaders:**
+
+```ts
+export async function loader() {
+  return json({ posts: await db.posts.findMany() });
+}
+```
+
+Remix handles caching, revalidation, and race conditions via its loader architecture.
+
+### When to Use Query Anyway
+
+Even with Server Components or framework loaders, Query is useful for:
+
+- **Background refetching:** Keep data fresh without explicit user action
+- **Infinite scrolling:** Pre-fetch first page on server, fetch more on client
+- **Optimistic updates:** Instant UI feedback for mutations
+- **Offline support:** Cache data in IndexedDB, sync when online
+- **Polling/realtime:** Interval fetching or subscription-based updates
+- **Deduplication:** Multiple components sharing the same data
+
+### Hybrid Approach
+
+Combine Server Components with Query:
+
+1. **Prefetch on server:** Load first page of data in RSC or loader
+2. **Hydrate on client:** Pass prefetched data to Query cache
+3. **Client interactions:** Use `useQuery` for subsequent fetches, `useMutation` for updates
+
+**Example:**
+
+```ts
+// Server Component
+export default async function PostsPage() {
+  const posts = await getPostsFn()
+  return (
+    <HydrationBoundary state={{ queries: [{ queryKey: ['posts'], data: posts }] }}>
+      <PostsList />
+    </HydrationBoundary>
+  )
+}
+
+// Client Component
+function PostsList() {
+  const { data } = useQuery(postsOptions()) // Reads from hydrated cache
+  // ...
+}
+```
+
+This gives you instant first render (no loading spinner) + all Query features (refetching, mutations, etc.).
+
+### When Not to Use Query
+
+- **Static data:** Site configuration, i18n strings (use framework loaders or bundler imports)
+- **Route-specific data that never changes:** Use framework loaders without Query
+- **Backend not Node.js and you're happy with a pure SPA:** Query shines here, but if you prefer framework solutions, use them
+- **React Native:** TanStack Query works great, but consider native caching solutions if they fit better
+
+### The Tradeoff
+
+Server Components reduce client-side complexity but require:
+
+- Server infrastructure (can't deploy to static hosting)
+- Tight integration with a specific framework and bundler
+- Careful management of server vs. client boundaries
+
+Query adds client-side complexity but gives you:
+
+- Framework-agnostic caching and refetching
+- Background updates without server round-trips
+- Optimistic updates and fine-grained cache control
+- Works in any React environment (SSR, SPA, React Native)
+
+**There's no free lunch; everything is a tradeoff.** Choose based on your app's needs, not because a tool is "modern" or "old-school."
+
 ## Further Reading (Concepts)
 
 - Why You Want React Query: <https://tkdodo.eu/blog/why-you-want-react-query>

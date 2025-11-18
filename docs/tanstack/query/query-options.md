@@ -49,6 +49,134 @@ const { data } = useQuery(userQuery); // data: User
 - No need for `<User>` generics on `useQuery`
 - Single source of truth for query structure
 
+## Type-Safe Patterns
+
+### Trust Your Types
+
+Type safety requires trust. If you can't rely on types being accurate, they become mere suggestions. Common pitfalls:
+
+```ts
+// ❌ Return-only generic (type assertion in disguise)
+const fetchTodo = async (id: number) => {
+  const response = await axios.get<Todo>(`/todos/${id}`);
+  return response.data;
+};
+```
+
+This violates the **Golden Rule of Generics:**
+
+**For a generic to be useful, it must appear at least twice.**
+
+The `axios.get` signature:
+
+```ts
+function get<T = any>(url: string): Promise<{ data: T; status: number }>;
+```
+
+`T` only appears in the return type—it's a lie. You could write:
+
+```ts
+const response = await axios.get(`/todos/${id}`);
+return response.data as Todo;
+```
+
+At least the type assertion is explicit.
+
+### Validate with Zod
+
+Runtime validation provides real type safety:
+
+```ts
+import { z } from 'zod';
+
+// ✅ Define schema
+const todoSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  done: z.boolean(),
+});
+
+const fetchTodo = async (id: number) => {
+  const response = await axios.get(`/todos/${id}`);
+  // ✅ Parse against schema
+  return todoSchema.parse(response.data);
+};
+
+const query = useQuery({
+  queryKey: ['todos', id],
+  queryFn: () => fetchTodo(id),
+});
+```
+
+**Benefits:**
+
+- Types inferred from schema (no separate type definition)
+- Validation throws descriptive errors (query goes to `error` state)
+- No "cannot read property X of undefined" surprises
+- Schema is resilient (use `.optional()`, `.nullable()` where appropriate)
+
+**Tradeoffs:**
+
+- Runtime overhead (parsing cost)
+- Not every field mismatch should fail the query
+- Applies best to critical data, not every endpoint
+
+### Infer, Don't Assert
+
+The more your TypeScript looks like JavaScript, the better:
+
+```ts
+// ❌ Explicit generics
+const query = useQuery<Todo>({
+  queryKey: ['todos', id],
+  queryFn: () => fetchTodo(id),
+});
+
+// ✅ Infer from queryFn
+const query = useQuery({
+  queryKey: ['todos', id],
+  queryFn: () => fetchTodo(id), // fetchTodo returns Promise<Todo>
+});
+```
+
+Type inference "flows" through your code. No angle brackets needed.
+
+### getQueryData Caveat
+
+`queryClient.getQueryData` has a return-only generic:
+
+```ts
+const todo = queryClient.getQueryData(['todos', 1]);
+//    ^? const todo: unknown
+
+const todo = queryClient.getQueryData<Todo>(['todos', 1]);
+//    ^? const todo: Todo | undefined
+```
+
+This is unavoidable—the QueryCache has no up-front schema. Tools like [react-query-kit](https://github.com/liaoliao666/react-query-kit) help by wrapping `getQueryData` with type-safe accessors.
+
+**v5 improvement:** Use `queryOptions` to make `getQueryData` type-safe:
+
+```ts
+const todoOptions = (id: number) =>
+  queryOptions({
+    queryKey: ['todos', id],
+    queryFn: () => fetchTodo(id),
+  });
+
+const todo = queryClient.getQueryData(todoOptions(1).queryKey);
+//    ^? const todo: Todo | undefined ✅
+```
+
+### End-to-End Type Safety
+
+For monorepos with shared frontend/backend:
+
+- **[tRPC](https://trpc.io/)**: Infer types from backend router
+- **[zodios](https://www.zodios.org/)**: Define API schema with zod
+
+Both build on React Query and eliminate the "trusted boundary" by defining types/schemas upfront.
+
 ### Why Separating queryKey from queryFn Was a Mistake
 
 Early patterns advocated splitting keys and functions:

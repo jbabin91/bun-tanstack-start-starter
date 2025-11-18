@@ -94,9 +94,163 @@ Memoize predicates or move heavy work into `select` to leverage structural shari
 - Query keys: `./query-keys.md`
 - Render optimizations: `./render-optimizations.md`
 
+## Advanced Select Patterns
+
+### Fine-Grained Subscriptions
+
+React Query has a global QueryCache with fine-grained subscriptions. Each `useQuery` subscribes to its QueryKey (hashed to QueryHash). But what if a single endpoint returns lots of data, and you only care about a slice?
+
+Use `select` to subscribe to derived state:
+
+```tsx
+// Subscribe only to product title
+function ProductTitle({ id }: Props) {
+  const productTitleQuery = useSuspenseQuery({
+    ...productOptions(id),
+    select: (data) => data.title,
+  });
+
+  return <h1>{productTitleQuery.data}</h1>;
+}
+```
+
+Now the component only re-renders when `title` changes, even if other product fields (like `purchaseCount`) change frequently.
+
+**Structural sharing:** Query applies structural sharing to `select` results, so picking multiple fields works:
+
+```tsx
+function Product({ id }: Props) {
+  const productQuery = useSuspenseQuery({
+    ...productOptions(id),
+    select: (data) => ({
+      title: data.title,
+      description: data.description,
+    }),
+  });
+
+  return (
+    <main>
+      <h1>{productQuery.data.title}</h1>
+      <p>{productQuery.data.description}</p>
+    </main>
+  );
+}
+```
+
+If either field changes, you get a re-render. Otherwise, structural sharing prevents unnecessary renders.
+
+### Typing Select Abstractions
+
+To make `select` optional in a factory:
+
+```ts
+const productOptions = <TData = ProductData>(
+  id: string,
+  select?: (data: ProductData) => TData,
+) => {
+  return queryOptions({
+    queryKey: ['product', id],
+    queryFn: () => fetchProduct(id),
+    select,
+  });
+};
+
+// Without select: data is ProductData
+const query1 = useQuery(productOptions('1'));
+//    ^? { data: ProductData | undefined }
+
+// With select: data is string
+const query2 = useQuery(productOptions('1', (data) => data.title));
+//    ^? { data: string | undefined }
+```
+
+The trick: add a type parameter `TData` that defaults to your `queryFn` return type, then define `select` as a function from `ProductData` to `TData`.
+
+### Stabilizing Select with useCallback
+
+Query re-runs `select` when:
+
+1. Data changes (good)
+2. The `select` function reference changes (usually bad)
+
+Inline functions are recreated on every render, so `select` re-runs unnecessarily:
+
+```ts
+// ❌ Runs on every render
+useQuery({
+  ...productsOptions(),
+  select: (data) => expensiveSuperTransformation(data),
+});
+```
+
+Stabilize with `useCallback`:
+
+```tsx
+// ✅ Stable function reference
+function ProductList({ minRating }: Props) {
+  const productsQuery = useSuspenseQuery({
+    ...productListOptions(),
+    select: React.useCallback(
+      (data) => expensiveSuperTransformation(data, minRating),
+      [minRating],
+    ),
+  });
+
+  return (
+    <ul>
+      {productsQuery.data.map((product) => (
+        <li key={product.id}>{product.summary}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Now `select` only re-runs when `minRating` changes or `data` changes.
+
+**No dependencies?** Move the function outside the component:
+
+```ts
+const select = (data: Array<Product>) => expensiveSuperTransformation(data);
+
+function ProductList() {
+  const productsQuery = useSuspenseQuery({
+    ...productListOptions(),
+    select,
+  });
+  // ...
+}
+```
+
+### Memoization Across Observers
+
+`select` runs once per `QueryObserver` (once per `useQuery` call). If you render the same component 3 times, `select` runs 3 times, even with the same `data`.
+
+To deduplicate computation across observers, memoize the transformation:
+
+```ts
+import memoize from 'fast-memoize';
+
+const select = memoize((data: Array<Product>) =>
+  expensiveSuperTransformation(data),
+);
+
+function ProductList() {
+  const productsQuery = useSuspenseQuery({
+    ...productListOptions(),
+    select,
+  });
+  // ...
+}
+```
+
+Now if 3 components render, `select` runs 3 times, but `expensiveSuperTransformation` only runs once (cache hit for 2nd and 3rd calls).
+
+**Tradeoff:** Adds dependency on `fast-memoize` and memory overhead. Use only for truly expensive transformations.
+
 ## Summary
 
-Encode true data differences in keys; prefer `select` for lightweight client-only filters to minimize cache duplication and re-renders.
+Encode true data differences in keys; prefer `select` for lightweight client-only filters to minimize cache duplication and re-renders. For fine-grained subscriptions, use `select` to pick slices of data. Stabilize `select` functions with `useCallback` or by moving them outside components. For expensive transformations used by multiple observers, combine `select` with memoization libraries.
 
 ## Further Reading
 

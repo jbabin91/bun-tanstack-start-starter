@@ -57,7 +57,13 @@ Always use the format from `.commitlintrc.js`:
 [optional body with bullet points]
 ```
 
-**Important**: Keep commit messages under 200 characters for the header, use body for details.
+**Important**:
+
+- Keep the header (first line) under 100 characters
+- Use the body for detailed explanations
+- **Commit message bodies have length limits too** - keep total message under ~1000 characters
+- For large changes affecting multiple areas, create **separate commits per area** instead of one massive commit message
+- If a single commit message would be too long, that's a sign to break the work into multiple commits
 
 ## File Operations
 
