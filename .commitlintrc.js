@@ -39,7 +39,7 @@ export default defineConfig({
       qd: 'docs(query): :memo: update query documentation',
       rd: 'docs(router): :memo: update router documentation',
       sd: 'docs(start): :memo: update start documentation',
-      b: 'chore(deps): :arrow_up: bump dependencies',
+      b: 'chore(deps): :hammer: bump dependencies',
     },
     scopes: [
       'query',

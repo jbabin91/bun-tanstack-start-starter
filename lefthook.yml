@@ -1,5 +1,8 @@
 # Refer for explanation to following link:
 # https://lefthook.dev/configuration/
+output:
+  - failure # Only show failed steps
+  - execution_out # Show command output for failures
 
 pre-commit:
   parallel: true
