@@ -12,6 +12,9 @@ This is the canonical index for architecture decisions that affect the project a
 ## Index
 
 - 0001 — Commit granularity and message body guidelines (see `adrs/0001-commit-granularity-and-bullets.md`)
+- 0002 — Adopt TanStack Start + TanStack Router (see `adrs/0002-tanstack-start-and-router.md`)
+- 0003 — Adopt TanStack Query for data fetching (see `adrs/0003-tanstack-query.md`)
+- 0004 — UI component strategy: Base UI + COSS UI (see `adrs/0004-base-ui-and-coss-ui.md`)
 
 ## Authoring Notes
 
