@@ -15,6 +15,8 @@ This is the canonical index for architecture decisions that affect the project a
 - 0002 — Adopt TanStack Start + TanStack Router (see `adrs/0002-tanstack-start-and-router.md`)
 - 0003 — Adopt TanStack Query for data fetching (see `adrs/0003-tanstack-query.md`)
 - 0004 — UI component strategy: Base UI + COSS UI (see `adrs/0004-base-ui-and-coss-ui.md`)
+- 0005 — Bun runtime and tooling (see `adrs/0005-bun-runtime-and-tooling.md`)
+- 0006 — Tailwind CSS v4 adoption (see `adrs/0006-tailwindcss-v4-adoption.md`)
 
 ## Authoring Notes
 
