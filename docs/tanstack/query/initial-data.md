@@ -88,15 +88,105 @@ useQuery({
 | Real data required for logic branching | Wait for actual fetch             |
 | SSR + loader prefetch                  | Already have real data            |
 
+## Seeding Detail Caches from Lists
+
+When navigating from list \u2192 detail view, seed the detail cache from the list to eliminate loading states.
+
+### Pull Approach (Lazy Seeding)
+
+When detail query runs, look up the list cache:
+
+```ts
+export const useTodo = (id: number) => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ['todos', 'detail', id],
+    queryFn: () => fetchTodo(id),
+    initialData: () => {
+      // Look up list cache for the item
+      return queryClient
+        .getQueryData<Todo[]>(['todos', 'list'])
+        ?.find((todo) => todo.id === id);
+    },
+    initialDataUpdatedAt: () =>
+      // Tell Query when list was fetched for correct staleness
+      queryClient.getQueryState(['todos', 'list'])?.dataUpdatedAt,
+  });
+};
+```
+
+**Pros**: Seeds cache just-in-time when needed
+**Cons**: Requires `initialDataUpdatedAt` to respect `staleTime`
+
+### Push Approach (Eager Seeding)
+
+When list is fetched, immediately create detail caches:
+
+```ts
+export const useTodos = () => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ['todos', 'list'],
+    queryFn: async () => {
+      const todos = await fetchTodos();
+      todos.forEach((todo) => {
+        // Create detail cache for each item
+        queryClient.setQueryData(['todos', 'detail', todo.id], todo);
+      });
+      return todos;
+    },
+  });
+};
+```
+
+**Pros**: Staleness automatically tracked
+**Cons**: Creates many inactive cache entries that might be garbage collected before use (after `gcTime`)
+
+### When to Seed from Lists
+
+- List and detail structures are compatible (same shape or assignable)
+- List is fresh (< `staleTime`)
+- Detail view is frequently accessed after list view
+- For incompatible shapes, use `placeholderData` instead of `initialData`
+
+## Prefetching to Avoid Waterfalls
+
+Start fetches early before components render:
+
+```ts
+// Route-level prefetch (best)
+export const Route = createFileRoute('/posts/')({
+  loader: async ({ context: { queryClient } }) => {
+    await queryClient.prefetchQuery(postsOptions());
+  },
+});
+
+// Bundle-level prefetch (code-splitting)
+queryClient.prefetchQuery(postsOptions()); // Runs when bundle evaluated
+
+// Intent-based prefetch
+<Link
+  to="/posts"
+  onPointerEnter={() => queryClient.prefetchQuery(postsOptions())}
+/>;
+```
+
+**Suspense waterfalls**: Multiple `useSuspenseQuery` in one component suspend sequentially. Fix by:
+
+1. One query per component
+2. Prefetch all queries before component renders
+3. Use `useSuspenseQueries` to trigger parallel fetches
+
 ## Cross-References
 
 - SSR: `./ssr-hydration.md`
 - Paginated queries: `./paginated-queries.md`
 - Suspense: `./suspense.md`
+- Prefetching: `./prefetching-router.md`
 
 ## Summary
 
-Use `initialData` for client-only bootstrap and `placeholderData` for cosmetic smoothing, not as substitutes for SSR prefetch on critical content.
+Use `initialData` for client-only bootstrap and seeding from other caches. Use `placeholderData` for cosmetic smoothing. Prefetch early to avoid waterfalls. Seed detail caches from lists for instant navigation.
 
 ## Seeding the Cache (Programmatically)
 

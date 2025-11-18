@@ -13,6 +13,95 @@ In this project, we use Query to:
 - Manage loading/error states declaratively
 - Implement mutations with optimistic updates
 
+## Mental Model: Async State Manager, Not a Data Fetching Library
+
+A common misconception is that React Query fetches data. **It doesn't.** React Query is an async state manager for promises. You provide the promise (via `queryFn`), and Query manages its lifecycle:
+
+- **Caching**: Stores resolved promise values
+- **Deduplication**: Shares in-flight promises
+- **Background updates**: Refetches when stale
+- **Garbage collection**: Removes unused cache entries
+- **Optimistic updates**: Updates cache before mutation completes
+
+**What Query doesn't do:**
+
+- Make network requests (you provide the fetching logic)
+- Transform responses (unless you use `select`)
+- Validate data (that's your queryFn's job)
+
+**Key insight:** Query doesn't care where data comes from—REST, GraphQL, WebSockets, IndexedDB, or even synchronous computations wrapped in `Promise.resolve()`. It manages the promise lifecycle.
+
+### StaleTime is Your Friend
+
+Query defaults to `staleTime: 0`, meaning data is immediately considered stale after fetching. This is aggressive and leads to excessive refetching.
+
+**Default behavior (staleTime: 0):**
+
+- Data refetches on every mount
+- Data refetches on every window focus
+- Data refetches on every network reconnect
+
+**With staleTime:**
+
+```ts
+queryOptions({
+  queryKey: ['user'],
+  queryFn: getUserFn,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+```
+
+- Data stays fresh for 5 minutes
+- No refetches during that window
+- Significant performance improvement
+
+**Guidelines:**
+
+- User profiles: 5-10 minutes
+- Reference data (categories, tags): `Infinity` (never refetch automatically)
+- Real-time data (live scores): 0 or polling via `refetchInterval`
+- Dashboard metrics: 1-2 minutes
+
+**Caution:** Setting `staleTime: Infinity` means data never automatically refetches. You'll need to invalidate manually after mutations or rely on explicit refetch triggers.
+
+### Treat Query Parameters as Dependencies
+
+Query keys work like `useEffect` dependencies—when they change, Query refetches:
+
+```ts
+// ✅ Parameters in query key
+function useSearchQuery(term: string) {
+  return useQuery({
+    queryKey: ['search', term],
+    queryFn: () => searchFn({ term }),
+    enabled: term.length > 0,
+  });
+}
+
+// Component
+function SearchResults() {
+  const [term, setTerm] = useState('');
+  const { data } = useSearchQuery(term);
+  // When term changes, query key changes, Query refetches
+}
+```
+
+**Don't do this:**
+
+```ts
+// ❌ Parameters outside query key
+function useSearchQuery() {
+  const [term, setTerm] = useState('');
+  return useQuery({
+    queryKey: ['search'], // Missing term!
+    queryFn: () => searchFn({ term }),
+  });
+}
+// Changing term won't trigger refetch, cache will be wrong
+```
+
+**Rule:** All variables used in `queryFn` must be in `queryKey`. This ensures cache keys uniquely identify the data.
+
 ## Why Query?
 
 Query solves problems that are cumbersome with plain `fetch` or state management:

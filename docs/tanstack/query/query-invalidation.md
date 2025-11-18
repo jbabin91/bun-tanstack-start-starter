@@ -99,6 +99,134 @@ Loader prefetched queries that become stale will refetch on next navigation or f
 | Invalidation storm (multiple rapid calls)        | Batch related invalidations                           |
 | Never invalidating long-lived data               | Set appropriate `staleTime` + occasional invalidation |
 
+## Automatic Invalidation After Mutations
+
+Instead of manually invalidating in every mutation's `onSuccess`, you can set up global callbacks that automatically invalidate queries based on patterns.
+
+### Global MutationCache Callbacks
+
+Configure global invalidation when creating your QueryClient:
+
+```ts
+const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onSuccess: (_data, _variables, _context, mutation) => {
+      // Invalidate all queries after any mutation succeeds
+      queryClient.invalidateQueries();
+    },
+  }),
+});
+```
+
+**Caution:** This invalidates **everything** after every mutation. Only use this if:
+
+- Your app is small (few queries)
+- Mutations are infrequent
+- You want maximum data freshness at the cost of performance
+
+**Better approach:** Use selective invalidation based on mutation metadata.
+
+### Selective Invalidation with Meta Tags
+
+Tag mutations with metadata, then invalidate only related queries:
+
+```ts
+// Define mutation with tags
+const createPost = useMutation({
+  mutationFn: createPostFn,
+  meta: {
+    invalidates: [['posts']],
+  },
+});
+
+const updateUser = useMutation({
+  mutationFn: updateUserFn,
+  meta: {
+    invalidates: [['user']],
+  },
+});
+
+// Global callback reads meta and invalidates tagged queries
+const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onSuccess: (_data, _variables, _context, mutation) => {
+      const invalidates = mutation.options.meta?.invalidates as
+        | QueryKey[]
+        | undefined;
+      if (invalidates) {
+        invalidates.forEach((queryKey) => {
+          queryClient.invalidateQueries({ queryKey });
+        });
+      }
+    },
+  }),
+});
+```
+
+**Benefits:**
+
+- Single global callback handles all invalidation logic
+- Mutations declare what they affect (declarative)
+- No repeated `onSuccess` callbacks in every mutation
+- Easy to audit (search for `meta: { invalidates:` to see all patterns)
+
+**When to use:**
+
+- Medium to large apps with many mutations
+- Clear mutation → query relationships
+- Want to enforce consistent invalidation patterns
+
+### MutationKey-Based Invalidation
+
+Similar to query keys, mutation keys can group related mutations:
+
+```ts
+const createPost = useMutation({
+  mutationKey: ['post', 'create'],
+  mutationFn: createPostFn,
+});
+
+const updatePost = useMutation({
+  mutationKey: ['post', 'update'],
+  mutationFn: updatePostFn,
+});
+
+// Global callback checks mutation key prefix
+const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onSuccess: (_data, _variables, _context, mutation) => {
+      if (mutation.options.mutationKey?.[0] === 'post') {
+        queryClient.invalidateQueries({ queryKey: ['posts'] });
+      }
+    },
+  }),
+});
+```
+
+### Awaiting Important Refetches
+
+By default, `invalidateQueries` marks queries stale but doesn't wait for refetches. Use `await` to block until critical refetches complete:
+
+```ts
+onSuccess: async () => {
+  // Wait for user profile to refetch before continuing
+  await queryClient.invalidateQueries({
+    queryKey: ['user'],
+    refetchType: 'active', // Only refetch mounted queries
+  });
+  // Now navigate or show success toast
+  router.navigate({ to: '/profile' });
+};
+```
+
+**Use cases:**
+
+- Navigate to page that depends on fresh data
+- Show toast only after data updated
+- Avoid race conditions (mutation + navigation)
+
+**Caution:** Awaiting adds latency. Only await refetches that are critical for the next UI state.
+
 ## Cross-References
 
 - Optimistic updates: `./optimistic-updates.md`
@@ -107,4 +235,4 @@ Loader prefetched queries that become stale will refetch on next navigation or f
 
 ## Summary
 
-Invalidate selectively when direct cache editing is costly. Favor `setQueryData` for simple merges, use prefix invalidation for multi-scope changes, and minimize broad stale marking to retain performance.
+Invalidate selectively when direct cache editing is costly. Favor `setQueryData` for simple merges, use prefix invalidation for multi-scope changes, and minimize broad stale marking to retain performance. For larger apps, consider global `MutationCache` callbacks with meta-based tagging to centralize invalidation logic and avoid repetitive `onSuccess` handlers.

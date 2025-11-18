@@ -12,6 +12,99 @@ Without factories, each useQuery call re-specifies keys, functions, and defaults
 - Enable easy reuse in Router loaders (`prefetchQuery`) and components (`useSuspenseQuery`)
 - Provide a discoverable API surface (namespace-style grouping)
 
+## The queryOptions Helper: Type Safety & Inference
+
+The `queryOptions` helper from `@tanstack/react-query` provides critical type safety benefits:
+
+**Without queryOptions:**
+
+```ts
+const userQuery = {
+  queryKey: ['user', id],
+  queryFn: () => getUserFn(id),
+};
+
+// Type inference lost
+const { data } = useQuery(userQuery); // data: unknown
+```
+
+**With queryOptions:**
+
+```ts
+const userQuery = queryOptions({
+  queryKey: ['user', id],
+  queryFn: () => getUserFn(id),
+});
+
+// Type inference preserved
+const { data } = useQuery(userQuery); // data: User
+```
+
+**How it works:** `queryOptions` attaches a hidden `Symbol` (called `dataTag`) to the options object that preserves the return type of `queryFn`. When you pass these options to `useQuery`, TypeScript infers the correct data type.
+
+**Benefits:**
+
+- Full type safety without explicit generics
+- Works across loaders, components, tests
+- No need for `<User>` generics on `useQuery`
+- Single source of truth for query structure
+
+### Why Separating queryKey from queryFn Was a Mistake
+
+Early patterns advocated splitting keys and functions:
+
+```ts
+// ❌ Old pattern: separated keys and functions
+export const userKeys = {
+  all: () => ['user'] as const,
+  detail: (id: number) => [...userKeys.all(), id] as const,
+};
+
+export const userQueries = {
+  detail: (id: number) => getUserFn(id),
+};
+
+// Usage: manual composition
+useQuery({
+  queryKey: userKeys.detail(id),
+  queryFn: () => userQueries.detail(id),
+});
+```
+
+**Problems:**
+
+- Keys and functions drift apart (easy to mismatch parameters)
+- Two imports required (`userKeys` + `userQueries`)
+- Type inference breaks (no `dataTag` connection)
+- Verbose at call sites
+
+**Modern pattern: unified factories with queryOptions:**
+
+```ts
+// ✅ Unified pattern
+export const userQueries = {
+  all: () => ['user'] as const,
+  detail: (id: number) =>
+    queryOptions({
+      queryKey: [...userQueries.all(), id],
+      queryFn: () => getUserFn(id),
+    }),
+};
+
+// Usage: single import, full type safety
+const { data } = useQuery(userQueries.detail(id)); // data: User
+```
+
+**Advantages:**
+
+- Key and function always stay together (impossible to mismatch)
+- Single import
+- Full type inference via `dataTag`
+- Cleaner call sites
+- Easier refactoring (change in one place)
+
+**Lesson:** Combine keys with functions in the same factory. The `queryOptions` helper makes this the best pattern.
+
 ## Hierarchical Key + Factory Example
 
 Inspired by community best practices (see External Resources) for scalable patterns:
