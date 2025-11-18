@@ -63,3 +63,10 @@ The root route can disable SSR for its main component, but the `shellComponent` 
 - Use SSR for predictable routes that benefit from fast first paint.
 - Use `'data-only'` when server-rendered data is needed but the component must run client-only.
 - Use `false` for fully client-side experiences (canvas, map, charts that rely on DOM APIs).
+
+## See Also
+
+- [SSR & Hydration](../query/ssr-hydration.md) - Query prefetching and hydration with SSR
+- [Advanced SSR](../query/advanced-ssr.md) - Streaming and selective SSR coordination
+- [Suspense](../query/suspense.md) - useSuspenseQuery with selective SSR
+- [Initial Data](../query/initial-data.md) - Loader data hydration patterns

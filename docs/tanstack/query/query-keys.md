@@ -1,0 +1,111 @@
+# Query Keys
+
+Query keys uniquely identify cached data. Use structured array keys for clarity, scalability, and partial invalidation.
+
+## Structure Guidelines
+
+| Guideline                            | Rationale                              |
+| ------------------------------------ | -------------------------------------- |
+| Array keys (`['posts','detail',id]`) | Natural hierarchy + segment inspection |
+| Semantic segments ("detail" not "d") | Debuggability & tooling filters        |
+| Stable ordering                      | Prevent accidental duplication         |
+| Primitive serializable values        | Deterministic identity                 |
+| Avoid embedding complex objects      | Hard to compare, memory heavy          |
+
+## Hierarchical Example
+
+```ts
+export const postQueries = {
+  all: () => ['posts'] as const,
+  lists: () => [...postQueries.all(), 'list'] as const,
+  list: (filter: string) => [...postQueries.lists(), filter] as const,
+  details: () => [...postQueries.all(), 'detail'] as const,
+  detail: (id: number) => [...postQueries.details(), id] as const,
+};
+```
+
+Factories (see `query-options.md`) wrap these keys in `queryOptions` for consumption.
+
+## Key Consistency
+
+Use identical factory for loader prefetch and component consumption.
+
+```ts
+await queryClient.prefetchQuery(postDetailOptions(id));
+// later
+const { data } = useSuspenseQuery(postDetailOptions(id));
+```
+
+If keys differ (`['posts','detail','42']` vs `['posts','detail',42]`) they are treated as separate queries.
+
+## Parameter Inclusion
+
+Include all parameters that affect returned data:
+
+```ts
+['posts', 'list', filter, page, sort];
+```
+
+If sort changes but key excludes it, stale data persists incorrectly.
+
+## Conditional Segments
+
+Avoid optional trailing `undefined` by explicitly handling condition:
+
+```ts
+const userId = maybeUserId ?? 'anonymous'[('profile', 'detail', userId)];
+```
+
+## Invalidation Leverage
+
+Invalidating `['posts','list']` affects all lists:
+
+```ts
+queryClient.invalidateQueries({ queryKey: postQueries.lists() });
+```
+
+Invalidating root affects entire domain:
+
+```ts
+queryClient.invalidateQueries({ queryKey: postQueries.all() });
+```
+
+## Composite + Search Params
+
+Include search params in keys when they alter data shape or filters. Validate first for type safety:
+
+```ts
+const { filter, sort } = Route.useSearch();
+const key = ['posts', 'list', filter, sort] as const;
+```
+
+## Key Debugging
+
+Use devtools or log keys sparingly (avoid production noise). For inspection:
+
+```ts
+for (const q of queryClient.getQueryCache().findAll()) {
+  console.debug(q.queryKey);
+}
+```
+
+(Reserve for diagnostics only.)
+
+## Anti-Patterns
+
+| Anti-pattern                            | Fix                                        |
+| --------------------------------------- | ------------------------------------------ |
+| Joined string key (`'posts:detail:42'`) | Use array segments for easier invalidation |
+| Omitting filter from key                | Include every filter dimension             |
+| Passing non-serializable objects        | Extract primitives (ids, strings)          |
+| Duplicating factory logic inline        | Centralize in namespace factories          |
+
+## Cross-References
+
+- Factories: `./query-options.md`
+- Invalidation: `./query-invalidation.md`
+- Paginated queries: `./paginated-queries.md`
+
+## Summary
+
+Design array keys that encode all data-impacting parameters. Use hierarchical prefixes for targeted invalidation and keep semantics clear to reduce maintenance friction.

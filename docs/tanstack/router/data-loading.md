@@ -72,6 +72,14 @@ export const Route = createFileRoute('/posts')({
 });
 ```
 
+## See Also
+
+- Query integration overview: [../query/overview.md](../query/overview.md)
+- Prefetching with the Router: [../query/prefetching-router.md](../query/prefetching-router.md)
+- Suspense with loader-prefetched queries: [../query/suspense.md](../query/suspense.md)
+- SSR & hydration with Query: [../query/ssr-hydration.md](../query/ssr-hydration.md)
+- Building reusable query factories: [../query/query-options.md](../query/query-options.md)
+
 ## `loader` Parameters
 
 The `loader` function receives a single object with the following properties:

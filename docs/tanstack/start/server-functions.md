@@ -106,3 +106,11 @@ export const getPost = createServerFn()
 - **Middleware**: wrap server functions with validation, auth, logging (see middleware doc).
 - **Static server functions**: use `staticFunctionMiddleware` to prerender results into JSON assets (experimental).
 - **Request cancellation**: consume `abortController.signal` for long operations.
+
+## See Also
+
+- [TanStack Query Overview](../query/overview.md) - Using Query with server functions
+- [Query Functions](../query/query-functions.md) - Server function integration patterns
+- [Mutations](../query/mutations.md) - useMutation with server functions
+- [SSR & Hydration](../query/ssr-hydration.md) - Prefetching server function data
+- [Testing](../query/testing.md) - Mocking server functions in tests
