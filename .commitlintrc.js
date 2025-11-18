@@ -32,40 +32,34 @@ export default defineConfig({
     'body-max-line-length': [0, 'always'],
   },
   prompt: {
+    useEmoji: true,
+    emojiAlign: 'center',
     alias: {
-      fd: 'docs: fix typos',
-      qd: 'docs(query): update query documentation',
-      rd: 'docs(router): update router documentation',
-      sd: 'docs(start): update start documentation',
-      b: 'chore(deps): bump dependencies',
+      fd: 'docs: :memo: fix typos',
+      qd: 'docs(query): :memo: update query documentation',
+      rd: 'docs(router): :memo: update router documentation',
+      sd: 'docs(start): :memo: update start documentation',
+      b: 'chore(deps): :arrow_up: bump dependencies',
     },
     scopes: [
-      // TanStack integrations
       'query',
       'router',
       'start',
       'form',
       'table',
-
-      // Project areas
       'routes',
       'components',
       'hooks',
       'lib',
       'providers',
       'styles',
-
-      // Infrastructure
       'config',
       'build',
       'deps',
       'dx',
-
-      // Documentation
       'docs',
       'architecture',
     ],
-    useEmojis: true,
     customScopesAlias: 'custom',
     emptyScopesAlias: 'empty',
     upperCaseSubject: false,

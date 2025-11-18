@@ -30,6 +30,15 @@ Use the integration-specific AGENTS.md for focused guidance:
 
 Each AGENTS.md links to its overview and topic docs. Start with the relevant file based on your task; if unsure, open Router first, then follow cross-links to Query or Start.
 
+## Git Conventions
+
+Follow the commit conventions documented in `@/docs/git-conventions.md`:
+
+- Use conventional commits with gitmojis
+- Format: `<type>(<scope>): <gitmoji> <description>`
+- Pre-commit hooks run automatically (typecheck, lint, format, markdown lint)
+- Commitlint validates message format on commit
+
 ## Workflow
 
 - Dev server: `bun --bun vite dev --port 3000`.
