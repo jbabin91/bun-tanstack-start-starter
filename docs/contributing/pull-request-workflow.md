@@ -306,6 +306,8 @@ actually fix it
 formatting
 ```
 
+If your history feels muddled, use the [Split-Into-Multiple-Commits Checklist](./git-conventions.md#when-to-split-commits) to regroup related changes before requesting review.
+
 ## TanStack-Specific Guidelines
 
 ### Query Changes

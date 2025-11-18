@@ -69,6 +69,8 @@ git add .
 git commit -m "feat(query): :sparkles: add new query pattern"
 ```
 
+Not sure how to group your changes? See the [Split-Into-Multiple-Commits Checklist](./git-conventions.md#when-to-split-commits).
+
 ### 4. Push and Create PR
 
 ```bash
