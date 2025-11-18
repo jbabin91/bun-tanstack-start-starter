@@ -22,15 +22,13 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ## TanStack Documentation
 
-Always open `@/docs/tanstack/router/AGENTS.md` when working on:
+Use the integration-specific AGENTS.md for focused guidance:
 
-- Routing features (dynamic routes, loaders, navigation, search params)
-- Route structure, configuration, and patterns
-- Data loading lifecycle, caching, and preloading
-- Authentication/authorization in routes
-- SSR behavior or server-side routing concerns
+- `@/docs/tanstack/query/AGENTS.md` — Data fetching, caching, queryOptions factories, invalidation, mutations, SSR hydration
+- `@/docs/tanstack/router/AGENTS.md` — Routing (loaders, navigation, params/search), route trees, SSR behavior
+- `@/docs/tanstack/start/AGENTS.md` — Server functions, selective SSR, middleware, auth, observability
 
-See the nested `AGENTS.md` files in `docs/tanstack/` for each integration's specific patterns and guidance.
+Each AGENTS.md links to its overview and topic docs. Start with the relevant file based on your task; if unsure, open Router first, then follow cross-links to Query or Start.
 
 ## Workflow
 
