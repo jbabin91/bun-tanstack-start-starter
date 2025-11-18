@@ -2,6 +2,52 @@
 
 This starter demonstrates how TanStack Start stitches together routing, data fetching, and SSR with Bun.
 
+## Project structure & naming conventions
+
+- **Files & folders**: Use kebab-case for all filenames and directories (e.g., `user-profile.tsx`, `query-keys.ts`).
+- **Modules**: Organize feature logic under `src/modules/` mirroring the top-level `src/` structure. Each module can contain `api/`, `components/`, `hooks/`, `lib/`, `providers/`, `types/` subdirectories as needed.
+- **No barrel files**: Import directly from specific files (e.g., `modules/profile/hooks/use-profile.ts`) rather than re-exporting through `index.ts`.
+- **Components**: UI primitives live in `src/components/ui/` (kebab-case), layouts in `src/components/layouts/`.
+- **Routes**: File-based routing under `src/routes/` follows kebab-case; `__root.tsx` and `_public/` are exceptions.
+- **TypeScript**: Prefer `type` aliases over interfaces; strict mode enforces unused local/param checks.
+
+Example module structure:
+
+```text
+src/
+  modules/
+    profile/
+      api/
+        queries.ts
+        mutations.ts
+      components/
+        profile-card.tsx
+        profile-settings.tsx
+      hooks/
+        use-profile.ts
+      lib/
+        utils.ts
+      types/
+        profile.ts
+    todos/
+      api/
+        queries.ts
+      components/
+        todo-list.tsx
+      hooks/
+        use-todos.ts
+  components/
+    ui/
+      button.tsx
+      card.tsx
+    layouts/
+      site-header.tsx
+  routes/
+    __root.tsx
+    _public/
+      login.tsx
+```
+
 ## Routing layers
 
 - `src/router.tsx` initializes the router with generated `routeTree.gen.ts`.

@@ -107,15 +107,15 @@ for (const q of queryClient.getQueryCache().findAll()) {
 
 ## Colocate Keys with Queries
 
-Keep query keys and query functions together in feature directories, not in a global `/utils/queryKeys.ts`. Colocate for maintainability:
+Keep query keys and query functions together in module directories, not in a global `/utils/query-keys.ts`. Colocate for maintainability:
 
 ```text
 src/
-  features/
-    Profile/
+  modules/
+    profile/
       index.tsx
       queries.ts    # Keys, factories, hooks here
-    Todos/
+    todos/
       index.tsx
       queries.ts
 ```
