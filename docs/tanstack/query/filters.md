@@ -33,3 +33,7 @@ Memoize predicates or move heavy work into `select` to leverage structural shari
 ## Summary
 
 Encode true data differences in keys; prefer `select` for lightweight client-only filters to minimize cache duplication and re-renders.
+
+## Further Reading
+
+- Data Transformations: <https://tkdodo.eu/blog/react-query-data-transformations>

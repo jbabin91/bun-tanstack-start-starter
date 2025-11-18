@@ -38,3 +38,7 @@ Not in this project. Prefer explicit factories for type safety and clarity.
 - Mutations & invalidation: `./mutations.md`, `./query-invalidation.md`
 - SSR & prefetching: `./ssr-hydration.md`, `./prefetching-router.md`
 - Factories: `./query-options.md`
+
+## Further Reading
+
+- React Query as a State Manager: <https://tkdodo.eu/blog/react-query-as-a-state-manager>

@@ -118,6 +118,7 @@ export function postsOptions() {
 - **[default-query-function.md](./default-query-function.md)** - Global defaults
 - **[testing.md](./testing.md)** - MSW, loader tests
 - **[faq.md](./faq.md)** - Redux/MobX comparison, pitfalls
+- **[realtime-updates.md](./realtime-updates.md)** - WebSockets/SSE cache updates
 
 ## Quick Decisions
 
@@ -142,5 +143,17 @@ export function postsOptions() {
 - [Official TanStack Query Docs](https://tanstack.com/query/latest/docs/framework/react/overview)
 - [Query Devtools](https://tanstack.com/query/latest/docs/framework/react/devtools)
 - [Query Examples](https://tanstack.com/query/latest/docs/framework/react/examples)
-- Community Blog (Query Options API): [https://tkdodo.eu/blog/the-query-options-api](https://tkdodo.eu/blog/the-query-options-api)
-- Community Blog (Automatic Invalidation): [https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations](https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations)
+- Community Blog (Query Options API): <https://tkdodo.eu/blog/the-query-options-api>
+- Community Blog (Automatic Invalidation): <https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations>
+- Community Blog (Effective Keys): <https://tkdodo.eu/blog/effective-react-query-keys>
+- Community Blog (Function Context): <https://tkdodo.eu/blog/leveraging-the-query-function-context>
+- Community Blog (Status Checks): <https://tkdodo.eu/blog/status-checks-in-react-query>
+- Community Blog (Data Transformations): <https://tkdodo.eu/blog/react-query-data-transformations>
+- Community Blog (Render Optimizations): <https://tkdodo.eu/blog/react-query-render-optimizations>
+- Community Blog (Testing): <https://tkdodo.eu/blog/testing-react-query>
+- Community Blog (TypeScript): <https://tkdodo.eu/blog/react-query-and-type-script>
+- Community Blog (WebSockets): <https://tkdodo.eu/blog/using-web-sockets-with-react-query>
+- Community Blog (Placeholder vs Initial): <https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query>
+- Community Blog (Error Handling): <https://tkdodo.eu/blog/react-query-error-handling>
+- Community Blog (Mutations): <https://tkdodo.eu/blog/mastering-mutations-in-react-query>
+- Community Blog (Offline): <https://tkdodo.eu/blog/offline-react-query>

@@ -31,3 +31,7 @@ See `./initial-data.md` for bootstrap patterns and using previous data as placeh
 ## Summary
 
 Use `placeholderData` for cosmetic placeholders while a query loads; reserve `initialData` for seeding real cached data without SSR.
+
+## Further Reading
+
+- Placeholder vs Initial Data: <https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query>

@@ -109,3 +109,7 @@ for (const q of queryClient.getQueryCache().findAll()) {
 ## Summary
 
 Design array keys that encode all data-impacting parameters. Use hierarchical prefixes for targeted invalidation and keep semantics clear to reduce maintenance friction.
+
+## Further Reading
+
+- Effective React Query Keys: <https://tkdodo.eu/blog/effective-react-query-keys>

@@ -77,3 +77,7 @@ useQuery({
 ## Summary
 
 Use `initialData` for client-only bootstrap and `placeholderData` for cosmetic smoothing, not as substitutes for SSR prefetch on critical content.
+
+## Further Reading
+
+- Placeholder vs Initial Data: <https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query>

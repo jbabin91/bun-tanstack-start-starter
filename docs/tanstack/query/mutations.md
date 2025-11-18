@@ -196,3 +196,7 @@ Prefer the narrowest scope that maintains correctness.
 ## Summary
 
 Mutations update server state. Prefer direct cache updates for cheap operations; invalidate selectively when impact spans multiple scopes. Use optimistic updates sparingly with clear rollback mechanisms and plan for Form integration to separate UI validation from persistence.
+
+## Further Reading
+
+- Mastering Mutations: <https://tkdodo.eu/blog/mastering-mutations-in-react-query>

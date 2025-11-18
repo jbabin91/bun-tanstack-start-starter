@@ -34,3 +34,7 @@ export function offlineNotificationsOptions() {
 ## Summary
 
 Pick a network mode that matches UX expectations during offline periods. Prefer `offlineFirst` for cached reads and schedule refetch when connectivity returns.
+
+## Further Reading
+
+- Offline React Query: <https://tkdodo.eu/blog/offline-react-query>

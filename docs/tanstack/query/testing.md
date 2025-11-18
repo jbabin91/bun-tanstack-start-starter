@@ -79,3 +79,7 @@ afterEach(() => {
 ## Summary
 
 Create a test QueryClient, prefetch when needed, and assert on optimistic UI for fast, deterministic tests.
+
+## Further Reading
+
+- Testing React Query: <https://tkdodo.eu/blog/testing-react-query>

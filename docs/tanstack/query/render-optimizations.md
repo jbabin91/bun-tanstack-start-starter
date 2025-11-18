@@ -56,3 +56,7 @@ Move sorting/filtering to `select` or memoized selectors instead of computing on
 ## Summary
 
 Limit update signals, project only necessary data, and isolate subscription boundaries to keep render costs predictable and small.
+
+## Further Reading
+
+- Render Optimizations: <https://tkdodo.eu/blog/react-query-render-optimizations>

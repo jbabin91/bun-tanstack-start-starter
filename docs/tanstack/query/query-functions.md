@@ -58,6 +58,26 @@ export function userOptions(id: number) {
 
 Your server function or fetch wrapper must respect `AbortSignal`.
 
+## Query Function Context
+
+`queryFn` receives a context object with helpful fields:
+
+```ts
+export function searchPostsOptions(term: string) {
+  return queryOptions({
+    queryKey: ['posts', 'search', term],
+    // ctx: { queryKey, signal, meta, pageParam }
+    queryFn: async ({ queryKey, signal, meta }) => {
+      const [_r, _s, q] = queryKey as ['posts', 'search', string];
+      return getPostsFn({ q, signal, tags: meta?.tags });
+    },
+    meta: { tags: ['featured'] as string[] },
+  });
+}
+```
+
+Use `signal` for cancellation, `queryKey` for parameters, and `meta` to thread non-keyed metadata.
+
 ## Idempotence & Caching
 
 Query functions should be side-effect free (read-only). Mutations handle writes.
@@ -110,6 +130,10 @@ Assign `staleTime` based on volatility of data; keep logic centralized in factor
 - Factories: `./query-options.md`
 - Mutations: `./mutations.md`
 - Suspense: `./suspense.md`
+
+## Further Reading
+
+- Leveraging the Query Function Context: <https://tkdodo.eu/blog/leveraging-the-query-function-context>
 
 ## Summary
 
