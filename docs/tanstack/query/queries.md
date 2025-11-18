@@ -159,6 +159,61 @@ const { data } = useQuery({
 
 Query does not execute until `enabled` becomes true.
 
+## Error Handling Strategies
+
+### Error Boundaries with throwOnError
+
+Propagate errors to React Error Boundaries for centralized handling:
+
+```tsx
+function TodoList() {
+  // ✅ Errors throw, caught by nearest Error Boundary
+  const { data } = useQuery({
+    ...todosOptions(),
+    throwOnError: true,
+  });
+  return <div>{data.map(renderTodo)}</div>;
+}
+
+// Wrap in Error Boundary
+<ErrorBoundary fallback={<ErrorScreen />}>
+  <TodoList />
+</ErrorBoundary>;
+```
+
+**Granular control**: Pass a function to decide which errors throw:
+
+```tsx
+useQuery({
+  ...todosOptions(),
+  // Only 5xx server errors go to Error Boundary
+  throwOnError: (error) => error.response?.status >= 500,
+});
+```
+
+4xx errors (validation, auth) can be handled locally; 5xx errors escalate.
+
+### Global Error Notifications
+
+For toast notifications on background errors, use the QueryCache global callback:
+
+```tsx
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      // Only toast if we have stale data (background refetch failed)
+      if (query.state.data !== undefined) {
+        toast.error(`Something went wrong: ${error.message}`);
+      }
+    },
+  }),
+});
+```
+
+This shows a toast once per query (not once per observer), ideal for non-critical background errors while keeping stale UI visible.
+
+**Note**: In v5, `onError`/`onSuccess` callbacks were removed from `useQuery` to avoid per-observer side effects. Use global callbacks or `useEffect` for side effects based on query state.
+
 ## Abortable Queries
 
 Use AbortController in server function or fetch implementation; Query will pass signal if using `queryFn: ({ signal }) => ...` signature (advanced pattern—optional here).

@@ -43,6 +43,84 @@ export const createPostFn = createServerFn({ method: 'POST' }).handler(
 
 Query consumers treat returned `fieldErrors` appropriately (no Error Boundary).
 
+## QueryFunctionContext
+
+Instead of inline closures, use the `QueryFunctionContext` to extract params from the query key. This prevents dependency drift:
+
+```ts
+// ❌ Inline closure can get out of sync with queryKey
+export const useTodos = () => {
+  const { state, sorting } = useTodoParams();
+  return useQuery({
+    queryKey: ['todos', state], // Missing sorting!
+    queryFn: () => fetchTodos(state, sorting),
+  });
+};
+
+// ✅ Extract from queryKey via context
+const fetchTodos = async ({ queryKey }) => {
+  const [, state, sorting] = queryKey;
+  const response = await axios.get(`todos/${state}?sorting=${sorting}`);
+  return response.data;
+};
+
+export const useTodos = () => {
+  const { state, sorting } = useTodoParams();
+  return useQuery({
+    queryKey: ['todos', state, sorting], // Can't forget params
+    queryFn: fetchTodos,
+  });
+};
+```
+
+### Typed QueryFunctionContext with Factories
+
+Combine with query key factories for full type safety:
+
+```ts
+const todoKeys = {
+  all: () => ['todos'] as const,
+  lists: () => [...todoKeys.all(), 'list'] as const,
+  list: (state: State, sorting: Sorting) =>
+    [...todoKeys.lists(), state, sorting] as const,
+};
+
+const fetchTodos = async ({
+  queryKey,
+}: QueryFunctionContext<ReturnType<(typeof todoKeys)['list']>>) => {
+  const [, , state, sorting] = queryKey;
+  return axios.get(`todos/${state}?sorting=${sorting}`);
+};
+
+export const useTodos = () => {
+  const { state, sorting } = useTodoParams();
+  return useQuery({
+    queryKey: todoKeys.list(state, sorting),
+    queryFn: fetchTodos,
+  });
+};
+```
+
+Now you can't use parameters without adding them to the query key—prevents bugs.
+
+### Object Keys for Named Destructuring
+
+Array keys require positional destructuring (error-prone); object keys use names:
+
+```ts
+const todoKeys = {
+  list: (state: State, sorting: Sorting) =>
+    [{ scope: 'todos', entity: 'list', state, sorting }] as const,
+};
+
+const fetchTodos = async ({
+  queryKey: [{ state, sorting }],
+}: QueryFunctionContext<ReturnType<(typeof todoKeys)['list']>>) => {
+  // ✅ Named destructuring, no positional errors
+  return axios.get(`todos/${state}?sorting=${sorting}`);
+};
+```
+
 ## Abort Support
 
 If a query may be cancelled (navigation away), accept signal:
