@@ -19,3 +19,8 @@ pre-commit:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs,json,css,scss,md,mdc,mdx}'
       run: bun prettier --write {staged_files}
       stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx --bun commitlint --edit "$1"
