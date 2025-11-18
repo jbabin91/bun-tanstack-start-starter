@@ -20,6 +20,7 @@ Welcome to the contributing documentation for this TanStack Start project! This 
 
 - **[Pull Request Workflow](./pull-request-workflow.md)** - Creating, reviewing, and merging PRs
 - **[GitHub Workflow](./github-workflow.md)** - Using MCP tools vs gh CLI for GitHub operations
+- **Architecture Decisions (mADR)** - See `openspec/specs/architecture/design.md` for cross-cutting decisions
 
 ## Before You Start
 
