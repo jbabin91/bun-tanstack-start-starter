@@ -16,20 +16,54 @@ TanStack Query is a core dependency in this project but lacks dedicated document
 
 ## Progress
 
-Implemented foundation and core integration docs:
+✅ **COMPLETED** - All 30+ documentation files created and validated:
 
-- Navigation: `AGENTS.md`
-- Foundations: `overview.md`, `important-defaults.md`
-- Factories: `query-options.md`
-- Suspense: `suspense.md`
-- Mutations: `mutations.md`, `optimistic-updates.md`, `query-invalidation.md`
+**Foundation & Navigation:**
 
-Upcoming (next phase):
+- `AGENTS.md` - Quick reference with all docs indexed by category
+- `overview.md` - What Query is, why use it, Router/Start integration
+- `important-defaults.md` - Default behaviors and project conventions
 
-- Pagination: `infinite-queries.md`, `paginated-queries.md`
-- SSR/Hydration: `ssr-hydration.md`, `initial-data.md`, `prefetching-router.md`
-- Core extras: `queries.md`, `query-keys.md`, `query-functions.md`, `parallel-queries.md`, `dependent-queries.md`
-- Additional topics & FAQ
+**Critical Integration Patterns:**
+
+- `query-options.md` - queryOptions factory pattern with hierarchical keys
+- `suspense.md` - useSuspenseQuery + Router loader integration
+- `mutations.md` - useMutation with server functions and Form planning
+- `optimistic-updates.md` - Cache-based optimism with rollback
+- `query-invalidation.md` - Invalidation scope selection strategies
+- `infinite-queries.md` - Cursor-based pagination with search params
+- `ssr-hydration.md` - Prefetch in loaders, dehydrate/hydrate flow
+- `prefetching-router.md` - Intent-based prefetch patterns
+
+**Core Concepts:**
+
+- `queries.md`, `query-keys.md`, `query-functions.md`
+- `parallel-queries.md`, `dependent-queries.md`
+- `paginated-queries.md`, `initial-data.md`, `placeholder-data.md`
+
+**Performance & Advanced:**
+
+- `performance.md`, `render-optimizations.md`
+- `advanced-ssr.md`, `mutation-updates.md`
+
+**Additional Topics:**
+
+- `network-mode.md`, `background-fetching.md`, `window-focus-refetching.md`
+- `disabling-queries.md`, `query-retries.md`, `query-cancellation.md`
+- `scroll-restoration.md`, `filters.md`, `default-query-function.md`
+- `testing.md`, `faq.md`
+
+**Cross-Linking:**
+
+- ✅ Router `data-loading.md` - Added 5 Query doc links
+- ✅ Start `server-functions.md` - Added Query integration links
+- ✅ Start `selective-ssr.md` - Added SSR/hydration links
+
+**Validation:**
+
+- ✅ All 65 internal links validated (0 broken)
+- ✅ All markdown linting passed
+- ✅ Committed: 40 files, 3,932 insertions
 
 ## Design Highlights
 
@@ -46,12 +80,20 @@ Upcoming (next phase):
 
 ## Next Steps
 
-1. Implement infinite & paginated query docs
-2. Document SSR hydration and prefetch flows
-3. Add remaining core concept docs (keys, functions, parallel/dependent)
-4. Add network/offline, retries, cancellation, testing, FAQ
-5. Cross-link Router/Start docs to new Query docs
-6. Run link validation and finalize terminology
+**Change Complete** - Ready for archiving:
+
+1. ✅ All 30+ documentation files created
+2. ✅ Cross-links added to Router and Start docs
+3. ✅ Link validation passing (65 links, 0 broken)
+4. ✅ All linting and formatting passed
+5. ✅ Committed to repository
+
+**Post-Implementation:**
+
+- Monitor for documentation drift and update as Query/Router/Start APIs evolve
+- Consider adding visual diagrams for complex flows (loader → prefetch → hydrate)
+- Gather user feedback on missing patterns or unclear sections
+- Update when TanStack Form integration is implemented
 
 ## Impact
 
