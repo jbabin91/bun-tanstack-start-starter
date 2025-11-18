@@ -12,6 +12,52 @@ const createPost = useMutation({
 
 Server function returns the canonical new entity. Prefer returning fully hydrated objects (including generated IDs) to simplify cache updates.
 
+### Invoking Mutations: `mutate` vs `mutateAsync`
+
+`useMutation` returns two functions:
+
+- **`mutate`**: Fire-and-forget, handles errors internally. Use callbacks for side effects.
+- **`mutateAsync`**: Returns a Promise. Requires manual error handling (try/catch).
+
+```ts
+// ✅ Preferred: mutate with callbacks
+const onSubmit = () => {
+  createPost.mutate(data, {
+    onSuccess: (newPost) => navigate(`/posts/${newPost.id}`),
+  });
+};
+
+// ⚠️ Requires try/catch
+const onSubmit = async () => {
+  try {
+    const newPost = await createPost.mutateAsync(data);
+    navigate(`/posts/${newPost.id}`);
+  } catch (error) {
+    // Must handle or get unhandled promise rejection
+  }
+};
+```
+
+**When to use `mutateAsync`**: Concurrent mutations (`Promise.all`), dependent mutations (callback hell), or when you need the Promise for control flow.
+
+### Single Argument Rule
+
+Mutations accept only one argument for variables. Use an object for multiple values:
+
+```ts
+// ❌ Invalid - multiple arguments don't work
+const mutation = useMutation({
+  mutationFn: (title, body) => updateTodo(title, body),
+});
+mutation.mutate('hello', 'world'); // Won't work
+
+// ✅ Use an object
+const mutation = useMutation({
+  mutationFn: ({ title, body }) => updateTodo(title, body),
+});
+mutation.mutate({ title: 'hello', body: 'world' });
+```
+
 ## Lifecycle Callbacks
 
 ```ts
@@ -33,6 +79,65 @@ const createPost = useMutation({
 ```
 
 Use `onSuccess` for direct cache updates when possible; fall back to invalidation when computing diff is complex.
+
+### Callback Separation: Hook vs Invocation
+
+Callbacks on `useMutation` fire before callbacks on `mutate`. If the component unmounts, `mutate` callbacks won't fire.
+
+**Best practice**: Separate concerns
+
+- **Hook callbacks**: Query-related logic (invalidation, cache updates) that must always happen
+- **Invocation callbacks**: UI-related actions (redirects, toasts) that are context-specific
+
+```ts
+// ✅ Reusable hook with query logic
+const useUpdateTodo = () =>
+  useMutation({
+    mutationFn: updateTodo,
+    // Always invalidate the list
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['todos', 'list'],
+      });
+    },
+  });
+
+// In component: UI-specific actions
+const updateTodo = useUpdateTodo();
+updateTodo.mutate(
+  { title: 'newTitle' },
+  {
+    // Only redirect if still on detail page when mutation completes
+    onSuccess: () => navigate('/todos'),
+  },
+);
+```
+
+This keeps custom hooks reusable while allowing per-invocation UI customization.
+
+### Awaited Promises in Callbacks
+
+Promises returned from callbacks are awaited. If you want the mutation to stay in `loading` state while queries refetch:
+
+```ts
+{
+  // ✅ Mutation loading until invalidation completes
+  onSuccess: () => {
+    return queryClient.invalidateQueries({
+      queryKey: ['posts', id, 'comments'],
+    });
+  },
+}
+
+{
+  // 🚀 Fire-and-forget - won't wait
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ['posts', id, 'comments'],
+    });
+  },
+}
+```
 
 ## Automatic Invalidation After Mutations
 
@@ -107,10 +212,19 @@ const createTodo = useMutation({
 
 ### Optimistic Guidelines
 
-- Only use when latency harms UX significantly
-- Keep optimistic entities distinguishable (negative ID prefix)
-- Provide rollback context from `onMutate`
-- Ensure server validation (never trust optimistic data blindly)
+- **Use sparingly**: Only when instant feedback is critical (toggle buttons, likes). Most mutations don't need optimistic updates.
+- **Complexity cost**: Must mimic server logic (ID generation, sorting, filtering). More code = more edge cases.
+- **UX considerations**: Premature UI changes (closing dialogs, redirects) are hard to rollback.
+- **Keep distinguishable**: Use negative IDs or other markers for optimistic entries.
+- **Rollback context**: Return previous state from `onMutate` for error recovery.
+- **Server is source of truth**: Refetch after success to catch server-side changes from other users.
+
+**When not to use**:
+
+- Forms that close/redirect immediately (can't undo gracefully)
+- Sorted lists where position might change
+- Operations that frequently fail
+- When a loading state + button disable is sufficient UX
 
 ## Mutations + Forms (Planned Integration)
 
