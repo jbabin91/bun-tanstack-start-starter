@@ -5,6 +5,7 @@ import {
   HeadContent,
   Scripts,
 } from '@tanstack/react-router';
+import * as React from 'react';
 
 import { SiteFooter } from '@/components/layouts/site-footer';
 import { SiteHeader } from '@/components/layouts/site-header';
@@ -46,6 +47,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {import.meta.env.DEV && (
+          <script
+            crossOrigin="anonymous"
+            data-enabled="true"
+            src="//unpkg.com/react-grab/dist/index.global.js"
+          />
+        )}
       </head>
       <body>
         <SiteHeader />
