@@ -15,10 +15,8 @@ const ComboboxContext = React.createContext<{
 });
 
 function Combobox<
-  ItemValue,
-  SelectedValue = ItemValue,
-  Multiple extends boolean | undefined = false,
->(props: ComboboxPrimitive.Root.Props<ItemValue, SelectedValue, Multiple>) {
+  P extends React.ComponentProps<typeof ComboboxPrimitive.Root>,
+>(props: P) {
   const chipsRef = React.useRef<HTMLDivElement | null>(null);
   return (
     <ComboboxContext.Provider value={{ chipsRef, multiple: !!props.multiple }}>
