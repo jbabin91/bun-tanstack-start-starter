@@ -2,6 +2,15 @@
 
 This starter demonstrates how TanStack Start stitches together routing, data fetching, and SSR with Bun.
 
+## Related ADRs
+
+- ADR Index: `../openspec/specs/architecture/design.md`
+- 0002 — TanStack Start + Router: `../openspec/specs/architecture/adrs/0002-tanstack-start-and-router.md`
+- 0003 — TanStack Query: `../openspec/specs/architecture/adrs/0003-tanstack-query.md`
+- 0004 — UI Stack (Base UI + COSS UI): `../openspec/specs/architecture/adrs/0004-base-ui-and-coss-ui.md`
+- 0005 — Bun Runtime & Tooling: `../openspec/specs/architecture/adrs/0005-bun-runtime-and-tooling.md`
+- 0006 — Tailwind CSS v4: `../openspec/specs/architecture/adrs/0006-tailwindcss-v4-adoption.md`
+
 ## Project structure & naming conventions
 
 - **Files & folders**: Use kebab-case for all filenames and directories (e.g., `user-profile.tsx`, `query-keys.ts`).
